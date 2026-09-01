@@ -117,65 +117,65 @@ function createScript(idea, duration, variation = 0) {
     ]
   };
 
-  let banco;
+  // Cria ideias específicas para QUALQUER assunto informado pelo usuário.
+  // Cada variação recebe uma abordagem diferente sobre o mesmo tema.
+  const abordagens = [
+    {
+      titulo: `5 pontos importantes sobre ${tema}`,
+      texto: `Neste conteúdo, vamos mostrar cinco pontos importantes sobre ${tema} que podem ajudar você a entender melhor esse assunto.`
+    },
+    {
+      titulo: `Erros comuns sobre ${tema}`,
+      texto: `Muita gente comete erros quando começa a lidar com ${tema}. Conhecer esses erros pode ajudar você a tomar decisões melhores.`
+    },
+    {
+      titulo: `Como começar com ${tema}`,
+      texto: `Se você está começando a aprender sobre ${tema}, não tente entender tudo de uma vez. Comece pelo básico e avance passo a passo.`
+    },
+    {
+      titulo: `Dicas práticas sobre ${tema}`,
+      texto: `Uma forma simples de aprender sobre ${tema} é transformar o conhecimento em pequenas ações práticas que você consegue testar no dia a dia.`
+    },
+    {
+      titulo: `O que ninguém explica sobre ${tema}`,
+      texto: `Existe uma parte de ${tema} que muitas pessoas ignoram. Entender esse ponto pode mudar a forma como você enxerga esse assunto.`
+    },
+    {
+      titulo: `Como melhorar seus resultados com ${tema}`,
+      texto: `Se você já conhece um pouco sobre ${tema}, o próximo passo é identificar o que pode ser melhorado e testar novas estratégias.`
+    },
+    {
+      titulo: `Mitos e verdades sobre ${tema}`,
+      texto: `Existem muitas informações diferentes sobre ${tema}. Por isso, é importante separar o que realmente faz sentido de ideias que podem confundir quem está começando.`
+    },
+    {
+      titulo: `Passo a passo sobre ${tema}`,
+      texto: `Uma maneira mais fácil de entender ${tema} é dividir o processo em etapas simples e colocar cada uma delas em prática.`
+    },
+    {
+      titulo: `O maior erro ao lidar com ${tema}`,
+      texto: `Um dos problemas mais comuns relacionados a ${tema} é tentar fazer tudo ao mesmo tempo. Uma abordagem mais simples pode trazer resultados melhores.`
+    },
+    {
+      titulo: `Como usar ${tema} na prática`,
+      texto: `Conhecer ${tema} é apenas o começo. O mais importante é descobrir como aplicar esse conhecimento em uma situação real.`
+    },
+    {
+      titulo: `3 coisas que você precisa saber sobre ${tema}`,
+      texto: `Antes de tomar qualquer decisão relacionada a ${tema}, existem alguns pontos básicos que você deveria conhecer.`
+    },
+    {
+      titulo: `Vale a pena aprender sobre ${tema}?`,
+      texto: `Antes de investir tempo em ${tema}, entenda quais são os benefícios, os desafios e para quem esse conhecimento pode realmente ser útil.`
+    }
+  ];
 
-  if (
-    lower.includes("ganhar dinheiro") ||
-    lower.includes("renda") ||
-    lower.includes("dinheiro com ia") ||
-    lower.includes("inteligência artificial")
-  ) {
-    banco = bancos.dinheiroIA;
-  } else if (
-    lower.includes("marketing") ||
-    lower.includes("instagram") ||
-    lower.includes("conteúdo") ||
-    lower.includes("reels")
-  ) {
-    banco = bancos.marketing;
-  } else if (
-    lower.includes("produtividade") ||
-    lower.includes("tempo") ||
-    lower.includes("organização")
-  ) {
-    banco = bancos.produtividade;
-  } else if (
-    lower.includes("vendas") ||
-    lower.includes("vender") ||
-    lower.includes("cliente")
-  ) {
-    banco = bancos.vendas;
-  } else {
-    banco = [
-      {
-        titulo: "O ponto principal",
-        texto: `O primeiro passo para entender ${tema} é descobrir qual problema ele resolve e para quem essa solução realmente é útil.`
-      },
-      {
-        titulo: "Comece pelo básico",
-        texto: `Em vez de tentar fazer tudo sobre ${tema} de uma vez, escolha uma única ação e coloque essa ideia em prática.`
-      },
-      {
-        titulo: "Evite complicar",
-        texto: `Uma solução simples relacionada a ${tema} pode ser mais útil do que uma estratégia complicada que nunca sai do papel.`
-      },
-      {
-        titulo: "Teste na prática",
-        texto: `Escolha uma pequena ação relacionada a ${tema}, teste o resultado e use o que aprender para melhorar a próxima tentativa.`
-      },
-      {
-        titulo: "Transforme em ação",
-        texto: `Conhecer ${tema} é apenas o começo. O resultado aparece quando você transforma o conhecimento em uma ação que pode ser repetida.`
-      }
-    ];
-  }
+  const inicio = Math.abs(Number(variation) || 0) % abordagens.length;
 
-  // Faz cada Reel começar por uma ideia diferente.
-  const inicio = Math.abs(Number(variation) || 0) % banco.length;
   const ideias = [];
 
-  for (let i = 0; i < banco.length; i++) {
-    ideias.push(banco[(inicio + i) % banco.length]);
+  for (let i = 0; i < abordagens.length; i++) {
+    ideias.push(abordagens[(inicio + i) % abordagens.length]);
   }
 
   const selecionada = ideias[0];
@@ -215,6 +215,21 @@ function createScript(idea, duration, variation = 0) {
 }
 
 function criarHook(item, tema, variation) {
+  const hooks = [
+    `Você quer entender ${tema}? Então presta atenção nisso.`,
+    `Se você está começando com ${tema}, precisa saber disso.`,
+    `Pouca gente fala sobre este detalhe de ${tema}.`,
+    `Antes de aprender mais sobre ${tema}, veja isso.`,
+    `Quer aprender ${tema} de um jeito mais simples?`,
+    `Aqui está uma ideia importante sobre ${tema}.`,
+    `Você provavelmente está cometendo este erro em ${tema}.`,
+    `Veja uma forma simples de entender ${tema}.`,
+    `Se ${tema} faz parte dos seus objetivos, escute isso.`,
+    `Isso pode mudar a forma como você entende ${tema}.`
+  ];
+
+  return hooks[Math.abs(Number(variation) || 0) % hooks.length];
+}
   const hooks = [
     `Quer uma ideia prática sobre ${item.titulo.toLowerCase()}?`,
     `Existe uma forma simples de aproveitar ${item.titulo.toLowerCase()}.`,
