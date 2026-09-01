@@ -8,10 +8,10 @@ export default async function handler(request, context) {
   if (!contentType.includes('text/html')) return response;
 
   const html = await response.text();
-  if (html.includes('capcutToolsInjected')) return new Response(html, response);
+  if (html.includes('capcutToolsInjected')) return new Response(html, { status: response.status, statusText: response.statusText, headers: response.headers });
 
   const anchor = '<input id="globalFiles" class="hidden" type="file" accept="image/*,video/*" multiple></div>';
-  if (!html.includes(anchor)) return new Response(html, response);
+  if (!html.includes(anchor)) return new Response(html, { status: response.status, statusText: response.statusText, headers: response.headers });
 
   const block = `<div id="capcutToolsInjected" class="buttons" style="margin-top:10px">
   <button id="capcutMusic" class="secondary">🎵 MÚSICA IA GRÁTIS NO CAPCUT</button>
