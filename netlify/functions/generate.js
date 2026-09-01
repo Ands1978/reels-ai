@@ -1,7 +1,5 @@
 const OpenAI = require("openai");
 
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
 function normalizeStyle(value) {
   const style = String(value || "viral").trim().toLowerCase();
   if (style.includes("educ")) return "educativo";
@@ -20,16 +18,20 @@ function localScripts(idea, count) {
   const topic=cleanText(idea);
   const templates=[
     {titulo:`O que você precisa saber sobre ${topic}`,hook:`Pouca gente fala disso quando o assunto é ${topic}.`,body:`Aqui está um ponto concreto para entender ${topic}: observe o contexto, identifique o que realmente muda o resultado e evite conclusões genéricas.`,example:`Na prática, pense em uma situação real envolvendo ${topic} e compare o antes e o depois dessa decisão.`,action:`Escolha uma ação pequena relacionada a ${topic} e aplique hoje.`,close:`Se isso ajudou, salve para rever depois.`},
-    {titulo:`3 ideias sobre ${topic}`,hook:`Se você está lidando com ${topic}, comece por estas três ideias.`,body:`Primeiro, defina exatamente o que você quer alcançar. Segundo, elimine o que não contribui. Terceiro, acompanhe o resultado.`,example:`Um bom teste é aplicar uma mudança por vez e observar o que acontece em uma situação real de ${topic}.`,action:`Anote a próxima ação que você vai testar.`,close:`Depois, volte e veja o que mudou.`],
-    {titulo:`Uma forma prática de entender ${topic}`,hook:`Quer entender ${topic} sem complicar? Comece por aqui.`,body:`Separe o assunto em causa, decisão e consequência. Essa estrutura ajuda a transformar informação em uma ação clara.`,example:`Pegue um caso real de ${topic}, escreva a causa, a decisão tomada e a consequência observada.`,action:`Faça esse exercício com o seu próprio caso.`,close:`Clareza vem quando você transforma ideia em ação.`]
+    {titulo:`3 ideias sobre ${topic}`,hook:`Se você está lidando com ${topic}, comece por estas três ideias.`,body:`Primeiro, defina exatamente o que você quer alcançar. Segundo, elimine o que não contribui. Terceiro, acompanhe o resultado.`,example:`Um bom teste é aplicar uma mudança por vez e observar o que acontece em uma situação real de ${topic}.`,action:`Anote a próxima ação que você vai testar.`,close:`Depois, volte e veja o que mudou.`},
+    {titulo:`Uma forma prática de entender ${topic}`,hook:`Quer entender ${topic} sem complicar? Comece por aqui.`,body:`Separe o assunto em causa, decisão e consequência. Essa estrutura ajuda a transformar informação em uma ação clara.`,example:`Pegue um caso real de ${topic}, escreva a causa, a decisão tomada e a consequência observada.`,action:`Faça esse exercício com o seu próprio caso.`,close:`Clareza vem quando você transforma ideia em ação.`}
   ];
   return Array.from({length:count},(_,i)=>templates[i%templates.length]);
 }
 function extractJson(text){const value=cleanText(text);try{return JSON.parse(value)}catch(_){}const match=value.match(/\{[\s\S]*\}/);if(match)return JSON.parse(match[0]);throw new Error("A IA retornou uma resposta em formato inválido.")}
 async function generateWithAI({idea,duration,style,count}){
-  if(!process.env.OPENAI_API_KEY) throw new Error("OPENAI_API_KEY não configurada no Netlify.");
-  const instructions=`Você é o roteirista profissional do ReelsAI. Transforme o assunto do usuário em roteiros específicos, naturais e úteis para Reels. Nunca use frases genéricas quando puder ser concreto. O título deve falar do assunto. O hook deve criar curiosidade sem mencionar IA ou Reel. O corpo deve ensinar algo concreto. O exemplo deve ser realmente relacionado ao assunto. A ação deve ser útil. Para Bíblia, use referências reais. Para saúde, direito e finanças, seja responsável. Escreva em português brasileiro natural. Estilo: ${style}. Duração: ${duration}s. Quantidade: ${count}. Responda somente no JSON solicitado.`;
   try {
+    if(!process.env.OPENAI_API_KEY) {
+      if(process.env.ALLOW_LOCAL_FALLBACK!=="false") return {items:localScripts(idea,count),mode:"local-fallback"};
+      throw new Error("OPENAI_API_KEY não configurada no Netlify.");
+    }
+    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const instructions=`Você é o roteirista profissional do ReelsAI. Transforme o assunto do usuário em roteiros específicos, naturais e úteis para Reels. Nunca use frases genéricas quando puder ser concreto. O título deve falar do assunto. O hook deve criar curiosidade sem mencionar IA ou Reel. O corpo deve ensinar algo concreto. O exemplo deve ser realmente relacionado ao assunto. A ação deve ser útil. Para Bíblia, use referências reais. Para saúde, direito e finanças, seja responsável. Escreva em português brasileiro natural. Estilo: ${style}. Duração: ${duration}s. Quantidade: ${count}. Responda somente no JSON solicitado.`;
     const response=await client.responses.create({model:process.env.OPENAI_MODEL||"gpt-5.6-luna",instructions,input:cleanText(idea),text:{format:{type:"json_schema",name:"reels_generation",strict:true,schema:{type:"object",additionalProperties:false,properties:{reels:{type:"array",minItems:1,maxItems:10,items:{type:"object",additionalProperties:false,properties:{titulo:{type:"string"},hook:{type:"string"},body:{type:"string"},example:{type:"string"},action:{type:"string"},close:{type:"string"}},required:["titulo","hook","body","example","action","close"]}}},required:["reels"]}}}});
     const parsed=extractJson(response.output_text||"");
     if(!parsed.reels?.length) throw new Error("A IA não retornou nenhum roteiro.");
