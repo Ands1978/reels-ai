@@ -230,17 +230,8 @@ function criarHook(item, tema, variation) {
 
   return hooks[Math.abs(Number(variation) || 0) % hooks.length];
 }
-  const hooks = [
-    `Quer uma ideia prática sobre ${item.titulo.toLowerCase()}?`,
-    `Existe uma forma simples de aproveitar ${item.titulo.toLowerCase()}.`,
-    `Se você está pensando em ${tema}, preste atenção nesta ideia.`,
-    `Essa é uma das oportunidades mais interessantes sobre ${tema}.`,
-    `Pouca gente explica esta parte de ${tema}.`,
-    `Veja como transformar essa ideia em uma ação prática.`
-  ];
+ 
 
-  return hooks[Math.abs(Number(variation) || 0) % hooks.length];
-}
 
 function gerarExemplo(item, tema) {
   const exemplos = {
