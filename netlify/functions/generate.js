@@ -21,8 +21,12 @@ function createScript(idea, duration, variation = 0) {
         texto: "Você não precisa criar uma inteligência artificial. Pode usar ferramentas que já existem para oferecer edição, pesquisa, atendimento ou produção de conteúdo como serviço."
       },
       {
-        titulo: "Criar soluções para nichos",
-        texto: "Escolha um mercado específico e descubra um problema que ele enfrenta. Depois use inteligência artificial para criar uma solução simples e cobrar por ela."
+       {
+  titulo: "Criar soluções para nichos",
+  texto: "..."
+},
+{
+  titulo: "Criar vídeos com IA",r ela."
       ,
 {
   titulo: "Criar vídeos com IA",
@@ -41,9 +45,12 @@ function createScript(idea, duration, variation = 0) {
   texto: "Dentistas, médicos, advogados, corretores e outros profissionais precisam de conteúdo. Você pode usar inteligência artificial para produzir materiais para eles."
 },
 {
+  
   titulo: "Criar um negócio com automação",
   texto: "Pequenas automações podem economizar horas de trabalho. Você pode encontrar tarefas repetitivas e transformar a solução em um serviço."
-}}
+}
+
+
     ],
 
     marketing: [
