@@ -41,7 +41,7 @@ button:disabled { opacity: .5; cursor: wait; }
   <div class="logo">Reels<span>AI</span></div>
   <div class="card">
     <h1>Crie seus Reels automaticamente</h1>
-    <div class="sub">Gere o roteiro e transforme as cenas em um vídeo vertical 9:16.</div>
+    <div class="sub">Gere roteiro, imagens diferentes para cada cena e vídeo vertical 9:16.</div>
 
     <label for="idea">Tema do Reel</label>
     <textarea id="idea" placeholder="Ex.: 5 ferramentas de IA para ganhar dinheiro"></textarea>
@@ -91,7 +91,7 @@ async function generate(count) {
 
   document.getElementById("btn1").disabled = true;
   document.getElementById("btn10").disabled = true;
-  status.textContent = "🤖 Criando seu roteiro...";
+  status.textContent = "🤖 Criando seu roteiro profissional...";
   result.innerHTML = "";
 
   try {
@@ -113,15 +113,16 @@ async function generate(count) {
     if (count === 10) {
       for (let index = 0; index < reels.length; index++) {
         const reelData = reels[index];
-        status.textContent = `🎥 Renderizando vídeo ${index + 1} de ${reels.length}...`;
+        status.textContent = `🎥 Reel ${index + 1} de ${reels.length}: preparando imagens...`;
         await createVideo(
           reelData.item.scenes,
           reelData.videoButton,
           reelData.reel,
-          reelData.item.index
+          reelData.item.index,
+          reelData.item.tema
         );
       }
-      status.textContent = "✅ 10 Reels criados e renderizados!";
+      status.textContent = "✅ 10 Reels criados, com imagens diferentes e renderizados!";
     }
   } catch (error) {
     status.textContent = "❌ " + error.message;
@@ -143,7 +144,7 @@ function createReel(item) {
 
   const meta = document.createElement("div");
   meta.className = "reel-meta";
-  meta.textContent = `Estilo: ${item.style || "viral"} · ${item.duration}s`;
+  meta.textContent = `Estilo: ${item.style || "viral"} · ${item.duration}s · 5 imagens IA`;
   reel.appendChild(meta);
 
   item.scenes.forEach((scene) => {
@@ -156,13 +157,13 @@ function createReel(item) {
   const videoButton = document.createElement("button");
   videoButton.className = "secondary";
   videoButton.style.marginTop = "15px";
-  videoButton.textContent = "🎥 GERAR VÍDEO";
+  videoButton.textContent = "🎥 GERAR VÍDEO COM IMAGENS";
   videoButton.onclick = async function() {
     try {
-      await createVideo(item.scenes, videoButton, reel, item.index);
+      await createVideo(item.scenes, videoButton, reel, item.index, item.tema);
     } catch (error) {
       videoButton.disabled = false;
-      videoButton.textContent = "🎥 GERAR VÍDEO";
+      videoButton.textContent = "🎥 GERAR VÍDEO COM IMAGENS";
       document.getElementById("status").textContent = "❌ " + error.message;
     }
   };
@@ -173,14 +174,47 @@ function createReel(item) {
   return { item, videoButton, reel };
 }
 
-function createVideo(scenes, button, reel, reelNumber = 1) {
-  return new Promise((resolve, reject) => {
-    if (!Array.isArray(scenes) || scenes.length === 0) {
-      reject(new Error("O roteiro não possui cenas para renderizar."));
-      return;
-    }
+async function loadSceneImages(scenes, topic) {
+  const status = document.getElementById("status");
+  const images = await Promise.all(scenes.map(async (scene, index) => {
+    status.textContent = `🖼️ Gerando imagem ${index + 1} de ${scenes.length}...`;
 
-    button.disabled = true;
+    const response = await fetch("/.netlify/functions/image", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        scene: scene.text,
+        topic,
+        index: index + 1
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Erro ao gerar imagem.");
+
+    const image = new Image();
+    image.src = data.image;
+    await new Promise((resolve, reject) => {
+      image.onload = resolve;
+      image.onerror = () => reject(new Error("Não foi possível carregar uma imagem gerada pela IA."));
+    });
+    return image;
+  }));
+
+  return images;
+}
+
+async function createVideo(scenes, button, reel, reelNumber = 1, topic = "") {
+  if (!Array.isArray(scenes) || scenes.length === 0) {
+    throw new Error("O roteiro não possui cenas para renderizar.");
+  }
+
+  button.disabled = true;
+  button.textContent = "⏳ Gerando imagens...";
+
+  const images = await loadSceneImages(scenes, topic);
+
+  return new Promise((resolve, reject) => {
     button.textContent = "⏳ Renderizando vídeo...";
 
     const canvas = document.createElement("canvas");
@@ -227,7 +261,7 @@ function createVideo(scenes, button, reel, reelNumber = 1) {
 
       const info = document.createElement("div");
       info.className = "info";
-      info.textContent = "Vídeo vertical 9:16 criado no navegador.";
+      info.textContent = "Vídeo vertical 9:16 com uma imagem IA diferente em cada cena.";
 
       area.appendChild(video);
       area.appendChild(download);
@@ -244,34 +278,37 @@ function createVideo(scenes, button, reel, reelNumber = 1) {
     function animate(now) {
       const elapsed = now - start;
       if (elapsed >= total) {
-        drawScene(scenes[scenes.length - 1], 1);
+        drawScene(scenes.length - 1, 1);
         recorder.stop();
         return;
       }
 
       const seconds = elapsed / 1000;
-      let current = scenes[scenes.length - 1];
+      let currentIndex = scenes.length - 1;
       let progress = 0;
 
-      for (const scene of scenes) {
+      for (let i = 0; i < scenes.length; i++) {
+        const scene = scenes[i];
         const startTime = Number(scene.start);
         const endTime = Number(scene.end);
         if (seconds >= startTime && seconds < endTime) {
-          current = scene;
+          currentIndex = i;
           progress = (seconds - startTime) / (endTime - startTime);
           break;
         }
       }
 
-      drawScene(current, progress);
+      drawScene(currentIndex, progress);
       requestAnimationFrame(animate);
     }
 
-    function drawScene(scene, progress) {
-      const gradient = ctx.createLinearGradient(0, 0, 540, 960);
-      gradient.addColorStop(0, "#24143d");
-      gradient.addColorStop(1, "#08080d");
-      ctx.fillStyle = gradient;
+    function drawScene(sceneIndex, progress) {
+      const image = images[sceneIndex];
+      const scene = scenes[sceneIndex];
+
+      drawCover(image);
+
+      ctx.fillStyle = "rgba(0, 0, 0, 0.42)";
       ctx.fillRect(0, 0, 540, 960);
 
       ctx.fillStyle = "#9b5cff";
@@ -285,13 +322,32 @@ function createVideo(scenes, button, reel, reelNumber = 1) {
       drawWrappedText(String(scene.text), 270, 430, 440, 52);
 
       ctx.font = "18px Arial";
-      ctx.fillStyle = "#aaa";
-      ctx.fillText("Criado automaticamente", 270, 850);
-      ctx.fillStyle = "#ffffff33";
+      ctx.fillStyle = "#eeeeeecc";
+      ctx.fillText("Criado com IA", 270, 850);
+      ctx.fillStyle = "#ffffff55";
       ctx.fillRect(55, 885, 430, 6);
       ctx.fillStyle = "#9b5cff";
       ctx.fillRect(55, 885, 430 * Math.min(1, progress), 6);
       ctx.textAlign = "left";
+    }
+
+    function drawCover(image) {
+      const imageRatio = image.width / image.height;
+      const canvasRatio = canvas.width / canvas.height;
+      let sourceWidth = image.width;
+      let sourceHeight = image.height;
+      let sourceX = 0;
+      let sourceY = 0;
+
+      if (imageRatio > canvasRatio) {
+        sourceWidth = image.height * canvasRatio;
+        sourceX = (image.width - sourceWidth) / 2;
+      } else {
+        sourceHeight = image.width / canvasRatio;
+        sourceY = (image.height - sourceHeight) / 2;
+      }
+
+      ctx.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, canvas.width, canvas.height);
     }
 
     function drawWrappedText(text, x, y, maxWidth, lineHeight) {
