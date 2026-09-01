@@ -65,13 +65,16 @@ function createScript(idea, duration, variation = 0, style = "viral") {
   const items = getTopicItems(tema);
   const offset = Math.abs(Number(variation) || 0);
   const selected = items ? items[offset % items.length] : GENERIC[offset % GENERIC.length];
+  const isBiblical = items === BIBLICAL;
+
   const title = items ? selected[0] : fill(selected[0], tema);
-  const body = selected[1] || fill(selected[1], tema);
-  const example = selected[2] || `Um exemplo prático é aplicar ${title.toLowerCase()} no seu dia a dia.`;
-  const action = selected[3] || "Escolha uma pequena ação e coloque esta ideia em prática hoje.";
-  const hook = fill(HOOKS[mode][offset % HOOKS[mode].length], tema);
-  const texts = [hook, body, example, action, CLOSE[mode]];
+  const body = isBiblical ? selected[2] : (selected[1] || fill(selected[1], tema));
+  const example = isBiblical ? selected[3] : (selected[2] || `Um exemplo prático é aplicar ${title.toLowerCase()} no seu dia a dia.`);
+  const action = isBiblical ? "Compartilhe esta mensagem com alguém que precisa ouvir uma palavra de fé." : (selected[3] || "Escolha uma pequena ação e coloque esta ideia em prática hoje.");
+  const hook = isBiblical ? selected[1] : fill(HOOKS[mode][offset % HOOKS[mode].length], tema);
+  const texts = isBiblical ? [hook, body, example, action] : [hook, body, example, action, CLOSE[mode]];
   const step = duration / texts.length;
+
   return {
     titulo: title,
     hook,
