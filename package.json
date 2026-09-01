@@ -1,0 +1,6 @@
+{
+  "name": "reels-ai-netlify",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {"dev": "netlify dev", "build": "echo ReelsAI static build ready"}
+}
