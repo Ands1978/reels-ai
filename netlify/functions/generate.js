@@ -1,87 +1,121 @@
 function createScript(idea, duration, variation) {
   const tema = idea.trim();
+  const lower = tema.toLowerCase();
 
-  const hooks = [
-    `Pare de ignorar isso sobre ${tema}.`,
-    `Você está cometendo este erro em ${tema}.`,
-    `3 coisas que ninguém te conta sobre ${tema}.`,
-    `Se você quer melhorar em ${tema}, veja isso.`,
-    `Antes de continuar com ${tema}, assista isso.`,
-    `A maioria das pessoas começa ${tema} do jeito errado.`,
-    `Quer aprender ${tema} mais rápido? Comece por aqui.`,
-    `Existe uma forma mais simples de fazer ${tema}.`,
-    `Se eu começasse hoje em ${tema}, faria isso.`,
-    `Você precisa conhecer esta estratégia sobre ${tema}.`,
-    `Pouca gente explica ${tema} dessa maneira.`,
-    `Anote isso antes de tentar ${tema}.`
+  const ehDinheiroIA =
+    lower.includes("ganhar dinheiro") &&
+    (lower.includes("ia") || lower.includes("inteligência artificial"));
+
+  let ideias;
+
+  if (ehDinheiroIA) {
+    ideias = [
+      {
+        titulo: "Criar conteúdo para empresas",
+        texto:
+          "Você pode usar inteligência artificial para criar roteiros, legendas e ideias de conteúdo e oferecer esse serviço para pequenos negócios."
+      },
+      {
+        titulo: "Automatizar tarefas",
+        texto:
+          "Muitas empresas gastam horas em tarefas repetitivas. Você pode criar automações simples usando IA e cobrar pela solução."
+      },
+      {
+        titulo: "Criar produtos digitais",
+        texto:
+          "Ebooks, checklists, modelos e aulas podem ser criados com ajuda da IA e vendidos pela internet."
+      },
+      {
+        titulo: "Prestar serviços usando IA",
+        texto:
+          "Você pode usar IA para trabalhar com textos, pesquisas, apresentações, atendimento ou outras tarefas e vender esse serviço."
+      },
+      {
+        titulo: "Criar ferramentas simples",
+        texto:
+          "Encontre um problema específico e use ferramentas de IA para criar uma solução simples que possa ser vendida."
+      }
+    ];
+  } else {
+    ideias = [
+      {
+        titulo: "Comece pelo problema",
+        texto:
+          `Identifique primeiro qual problema relacionado a ${tema} você quer resolver.`
+      },
+      {
+        titulo: "Escolha uma solução",
+        texto:
+          `Em vez de tentar fazer tudo, escolha uma solução simples relacionada a ${tema}.`
+      },
+      {
+        titulo: "Transforme conhecimento em serviço",
+        texto:
+          `Veja como seu conhecimento sobre ${tema} pode ajudar outras pessoas.`
+      },
+      {
+        titulo: "Crie um processo",
+        texto:
+          `Organize uma maneira simples e repetível de trabalhar com ${tema}.`
+      },
+      {
+        titulo: "Teste e melhore",
+        texto:
+          `Faça um primeiro teste com ${tema}, observe o resultado e faça melhorias.`
+      }
+    ];
+  }
+
+  const hooks = ehDinheiroIA
+    ? [
+        "5 formas reais de ganhar dinheiro com inteligência artificial.",
+        "Quer ganhar dinheiro com IA? Veja estas 5 ideias.",
+        "5 maneiras de transformar inteligência artificial em renda.",
+        "Se você quer ganhar dinheiro com IA, comece por aqui.",
+        "5 oportunidades com IA que você pode testar hoje."
+      ]
+    : [
+        `5 ideias práticas para começar com ${tema}.`,
+        `5 formas de aproveitar melhor ${tema}.`,
+        `5 estratégias para você testar em ${tema}.`,
+        `Se você está começando em ${tema}, veja isso.`,
+        `5 maneiras de melhorar seus resultados com ${tema}.`
+      ];
+
+  const ctas = [
+    "Escolha uma dessas ideias e teste ainda hoje.",
+    "Comece pela mais simples e veja o resultado.",
+    "Salve este Reel para consultar depois.",
+    "Compartilhe com alguém que precisa dessas ideias.",
+    "Teste uma ideia por vez e veja o que funciona."
   ];
 
-  const bodies = [
-    `Primeiro, defina exatamente o que você quer conseguir com ${tema}.`,
-    `Em vez de tentar fazer tudo ao mesmo tempo, escolha uma única ação.`,
-    `O segredo está em transformar essa ideia em algo simples de executar.`,
-    `Comece pelo básico e observe o que acontece quando você aplica isso.`,
-    `Uma boa estratégia começa entendendo o problema antes de procurar a solução.`,
-    `Teste uma pequena mudança e compare o resultado.`,
-    `Não copie qualquer estratégia. Entenda primeiro por que ela funciona.`,
-    `Escolha uma abordagem, coloque em prática e acompanhe os resultados.`,
-    `Quanto mais claro for seu objetivo, mais fácil será escolher o próximo passo.`,
-    `Faça um teste simples hoje e use o resultado para melhorar amanhã.`,
-    `Evite complicar o processo antes mesmo de começar.`,
-    `O importante é transformar conhecimento em uma ação prática.`
-  ];
+  const offset = variation % ideias.length;
+  const selecionadas = [];
 
-  const lessons = [
-    `O primeiro passo é começar pequeno e melhorar aos poucos.`,
-    `Consistência costuma trazer mais resultado do que tentar fazer tudo de uma vez.`,
-    `O melhor caminho é testar, medir e ajustar.`,
-    `Não espere perfeição para começar.`,
-    `Aprenda com os resultados e mude aquilo que não estiver funcionando.`,
-    `Uma estratégia só vale a pena quando consegue ser aplicada na prática.`,
-    `Quanto mais você testa, melhor entende o que funciona para você.`,
-    `Transforme essa ideia em uma tarefa que possa ser feita hoje.`,
-    `Observe os resultados antes de aumentar o esforço.`,
-    `O objetivo não é complicar. É encontrar uma maneira eficiente de agir.`,
-    `Comece com o que você tem e evolua conforme aprende.`,
-    `Pequenas melhorias repetidas podem gerar grandes resultados.`
-  ];
+  for (let i = 0; i < ideias.length; i++) {
+    selecionadas.push(
+      ideias[(i + offset) % ideias.length]
+    );
+  }
 
-  const endings = [
-    `Agora escolha uma dessas ideias e coloque em prática.`,
-    `Teste isso hoje e veja qual resultado consegue alcançar.`,
-    `Salve este Reel para consultar depois.`,
-    `Compartilhe com alguém que precisa saber disso.`,
-    `Comece pequeno e evolua a partir dos resultados.`,
-    `Agora é sua vez de testar.`,
-    `Guarde essa ideia e coloque em prática.`,
-    `O próximo passo é transformar isso em ação.`,
-    `Teste, observe e ajuste.`,
-    `Comece hoje mesmo com uma pequena mudança.`,
-    `Se essa dica ajudou, salve este vídeo.`,
-    `Use isso como ponto de partida para o próximo passo.`
-  ];
-
-  // Cria uma combinação diferente para cada Reel
-  const hookIndex = variation % hooks.length;
-  const body1Index = (variation * 3 + 1) % bodies.length;
-  const body2Index = (variation * 5 + 4) % bodies.length;
-  const lesson1Index = (variation * 7 + 2) % lessons.length;
-  const lesson2Index = (variation * 11 + 5) % lessons.length;
-  const endingIndex = (variation * 13 + 3) % endings.length;
+  const hook = hooks[variation % hooks.length];
+  const cta = ctas[variation % ctas.length];
 
   const scenes = [
-    hooks[hookIndex],
-    bodies[body1Index],
-    bodies[body2Index],
-    lessons[lesson1Index],
-    lessons[lesson2Index],
-    endings[endingIndex]
+    hook,
+    `1. ${selecionadas[0].titulo}: ${selecionadas[0].texto}`,
+    `2. ${selecionadas[1].titulo}: ${selecionadas[1].texto}`,
+    `3. ${selecionadas[2].titulo}: ${selecionadas[2].texto}`,
+    `4. ${selecionadas[3].titulo}: ${selecionadas[3].texto}`,
+    `5. ${selecionadas[4].titulo}: ${selecionadas[4].texto}`,
+    cta
   ];
 
   const step = duration / scenes.length;
 
   return {
-    hook: scenes[0],
+    hook,
     duration,
     scenes: scenes.map((text, index) => ({
       start: Number((index * step).toFixed(2)),
@@ -123,8 +157,6 @@ exports.handler = async function(event) {
       };
     }
 
-    // Número aleatório para evitar que o mesmo tema
-    // gere exatamente o mesmo roteiro toda vez
     const seed = Math.floor(Math.random() * 100000);
 
     const items = Array.from(
