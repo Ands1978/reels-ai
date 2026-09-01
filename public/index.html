@@ -1,1 +1,299 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReelsAI</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #09090d;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 40px 20px;
+    }
+
+    .logo {
+      font-size: 30px;
+      font-weight: bold;
+      margin-bottom: 30px;
+    }
+
+    .logo span {
+      color: #9b5cff;
+    }
+
+    .card {
+      background: #15151d;
+      border: 1px solid #30303b;
+      border-radius: 18px;
+      padding: 25px;
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    .sub {
+      color: #aaa;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      color: #bbb;
+      margin: 15px 0 8px;
+    }
+
+    textarea,
+    select {
+      width: 100%;
+      background: #0d0d12;
+      color: white;
+      border: 1px solid #373744;
+      border-radius: 10px;
+      padding: 13px;
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 130px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 15px;
+      background: #8b5cf6;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #7046d5;
+    }
+
+    .status {
+      margin-top: 18px;
+      color: #aaa;
+    }
+
+    .reel {
+      margin-top: 18px;
+      padding: 18px;
+      background: #1d1d27;
+      border-radius: 12px;
+    }
+
+    .scene {
+      padding: 10px 0;
+      border-bottom: 1px solid #30303d;
+      color: #ddd;
+    }
+
+    @media (max-width: 650px) {
+      .row,
+      .buttons {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="logo">
+    Reels<span>AI</span>
+  </div>
+
+  <div class="card">
+
+    <h1>Crie seus Reels automaticamente</h1>
+
+    <div class="sub">
+      Digite uma ideia e gere roteiros prontos para transformar em vídeo.
+    </div>
+
+    <label>Tema do Reel</label>
+
+    <textarea
+      id="idea"
+      placeholder="Ex.: 5 ferramentas de IA para ganhar dinheiro">
+    </textarea>
+
+    <div class="row">
+
+      <div>
+        <label>Duração</label>
+
+        <select id="duration">
+          <option value="30">30 segundos</option>
+          <option value="45">45 segundos</option>
+          <option value="60">60 segundos</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Estilo</label>
+
+        <select id="style">
+          <option>Viral / rápido</option>
+          <option>Educativo</option>
+          <option>Motivacional</option>
+          <option>Storytelling</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div class="buttons">
+
+      <button onclick="generate(1)">
+        🎬 GERAR 1 REEL
+      </button>
+
+      <button onclick="generate(10)">
+        ⚡ GERAR 10 REELS
+      </button>
+
+    </div>
+
+    <div id="status" class="status">
+      Digite um tema para começar.
+    </div>
+
+    <div id="result"></div>
+
+  </div>
+
+</div>
+
+<script>
+
+async function generate(count) {
+
+  const idea =
+    document.getElementById("idea").value.trim();
+
+  const duration =
+    Number(document.getElementById("duration").value);
+
+  const style =
+    document.getElementById("style").value;
+
+  const status =
+    document.getElementById("status");
+
+  const result =
+    document.getElementById("result");
+
+  if (!idea) {
+    alert("Digite um tema primeiro.");
+    return;
+  }
+
+  status.textContent =
+    "🤖 Criando seus roteiros...";
+
+  result.innerHTML = "";
+
+  try {
+
+    const response = await fetch(
+      "/api/generate",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          idea,
+          duration,
+          style,
+          count
+        })
+      }
+    );
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.error || "Erro ao gerar."
+      );
+    }
+
+    status.textContent =
+      `✅ ${data.count} Reel(s) criado(s)!`;
+
+    data.items.forEach(item => {
+
+      const reel =
+        document.createElement("div");
+
+      reel.className = "reel";
+
+      reel.innerHTML =
+        `<strong>Reel ${item.index}</strong>`;
+
+      item.script.scenes.forEach(scene => {
+
+        const div =
+          document.createElement("div");
+
+        div.className = "scene";
+
+        div.textContent =
+          `${scene.start}s – ${scene.end}s: ${scene.text}`;
+
+        reel.appendChild(div);
+
+      });
+
+      result.appendChild(reel);
+
+    });
+
+  } catch (error) {
+
+    status.textContent =
+      "❌ " + error.message;
+
+  }
+
+}
+
+</script>
+
+</body>
+</html>
