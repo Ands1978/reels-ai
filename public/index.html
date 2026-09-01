@@ -311,8 +311,19 @@ async function generate(count) {
 
     status.textContent =
       "✅ Roteiro criado!";
+const reels = data.items.map(
+  (item, index) => createReel({ ...item, index: index + 1 })
+);
 
-    data.items.forEach(
+if (count === 10) {
+  for (const reelData of reels) {
+    await createVideo(
+      reelData.item.scenes,
+      reelData.videoButton,
+      reelData.reel
+    );
+  }
+}
         (item, index) => createReel({ ...item, index: index + 1 })
     );
 
@@ -389,10 +400,17 @@ function createReel(item) {
 
     };
 
-  reel.appendChild(videoButton);
+reel.appendChild(videoButton);
 
-  result.appendChild(reel);
+result.appendChild(reel);
+
+return {
+  item,
+  videoButton,
+  reel
+};
 }
+
 
 
 function createVideo(
