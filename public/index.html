@@ -313,7 +313,7 @@ async function generate(count) {
       "✅ Roteiro criado!";
 
     data.items.forEach(
-      (item) => createReel(item)
+        (item, index) => createReel({ ...item, index: index + 1 })
     );
 
   } catch (error) {
