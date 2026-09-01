@@ -107,15 +107,15 @@ export default async function handler(request, context) {
 
   function refreshLabels(){
     const global=document.getElementById('musicGlobal');
-    if(global) global.textContent='🎵 ABRIR ELEVEN MUSIC';
+    if(global && global.textContent!=='🎵 ABRIR ELEVEN MUSIC') global.textContent='🎵 ABRIR ELEVEN MUSIC';
 
     document.querySelectorAll('.musicbox').forEach(box=>{
       const b=box.querySelector('b');
-      if(b) b.textContent='🎵 Fundo musical · Eleven Music';
+      if(b && b.textContent!=='🎵 Fundo musical · Eleven Music') b.textContent='🎵 Fundo musical · Eleven Music';
       const hint=box.querySelector('.hint');
-      if(hint && !box.querySelector('audio')) hint.textContent='Abra o Eleven Music com um prompt pronto para criar a trilha instrumental do Reel.';
+      if(hint && !box.querySelector('audio') && hint.textContent!=='Abra o Eleven Music com um prompt pronto para criar a trilha instrumental do Reel.') hint.textContent='Abra o Eleven Music com um prompt pronto para criar a trilha instrumental do Reel.';
       const button=box.querySelector('[data-act="music"]');
-      if(button) button.textContent='Abrir Eleven Music';
+      if(button && button.textContent!=='Abrir Eleven Music') button.textContent='Abrir Eleven Music';
       const name=box.querySelector('.hint');
       if(name && box.querySelector('audio') && name.textContent.includes('MusicGen')) name.textContent=name.textContent.replace(/MusicGen/g,'Eleven Music');
     });
