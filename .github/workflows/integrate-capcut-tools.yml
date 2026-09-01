@@ -2,63 +2,56 @@ name: Integrate CapCut tools
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 permissions:
   contents: write
 
 jobs:
   integrate:
-    if: "!contains(github.event.head_commit.message, '[skip tools]')"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-      - name: Inject CapCut tools into editor
-        shell: bash
+      - name: Inject CapCut buttons
         run: |
-          python - <<'PY'
+          python3 - <<'PY'
           from pathlib import Path
           p = Path('public/index.html')
           s = p.read_text(encoding='utf-8')
-          marker = 'id="capcutToolsInjected"'
-          if marker in s:
-              print('CapCut tools already injected')
+          if 'capcutToolsInjected' in s:
+              print('Already integrated')
               raise SystemExit(0)
           anchor = '<div class="buttons"><button id="generate10">⚡ GERAR 10 REELS</button>'
-          insert = '''<div id="capcutToolsInjected" class="buttons" style="margin-top:10px"><button id="capcutMusic" class="secondary">🎵 MÚSICA DE FUNDO GRÁTIS</button><button id="capcutEditor" class="secondary">🎬 EDITAR NO CAPCUT GRÁTIS</button></div>\n<div class="notice">🆓 <b>CapCut gratuito:</b> gere música de fundo por texto no CapCut AI Music e abra o editor online para acabamento final.''' + "</div>"
+          block = '''<div id="capcutToolsInjected" class="buttons" style="margin-top:10px"><button id="capcutMusic" class="secondary">🎵 MÚSICA DE FUNDO GRÁTIS</button><button id="capcutEditor" class="secondary">🎬 EDITAR NO CAPCUT GRÁTIS</button></div>
+<div class="notice">🆓 <b>CapCut gratuito:</b> gere música de fundo por texto no CapCut AI Music e abra o editor online para acabamento final.</div>'''
           if anchor not in s:
-              raise SystemExit('Anchor not found')
-          s = s.replace(anchor, anchor + insert, 1)
-          script = r'''<script id="capcutToolsScript">
+              raise SystemExit('anchor not found')
+          s = s.replace(anchor, anchor + block, 1)
+          script = '''<script id="capcutToolsScript">
 (function(){
   const MUSIC_URL='https://www.capcut.com/tools/ai-music-generator';
   const EDITOR_URL='https://www.capcut.com/pt-br/';
-  function openCapCut(url){window.open(url,'_blank','noopener,noreferrer')}
-  const music=document.getElementById('capcutMusic');
-  const editor=document.getElementById('capcutEditor');
-  if(music) music.onclick=function(){
+  const openCapCut=url=>window.open(url,'_blank','noopener,noreferrer');
+  document.getElementById('capcutMusic')?.addEventListener('click',()=>{
     const idea=document.getElementById('idea')?.value?.trim()||'instrumental background music for a short vertical social media video';
     const style=document.getElementById('style')?.value||'Motivacional';
     try{navigator.clipboard?.writeText(`Instrumental background music for a ${style.toLowerCase()} short video about ${idea}. No vocals, clean rhythm, subtle and cinematic.`)}catch(e){}
-    openCapCut(MUSIC_URL)
-  };
-  if(editor) editor.onclick=function(){openCapCut(EDITOR_URL)};
+    openCapCut(MUSIC_URL);
+  });
+  document.getElementById('capcutEditor')?.addEventListener('click',()=>openCapCut(EDITOR_URL));
 })();
 </script>'''
           s = s.replace('</body>', script + '\n</body>', 1)
           p.write_text(s, encoding='utf-8')
           PY
-      - name: Commit changes
-        shell: bash
+      - name: Commit integration
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public/index.html
-          if git diff --cached --quiet; then
-            echo "No changes"
-            exit 0
-          fi
-          git commit -m "Add CapCut free music and editor buttons [skip tools]"
+          git diff --cached --quiet && exit 0
+          git commit -m "Integrate CapCut free music and editor [skip tools]"
           git push
