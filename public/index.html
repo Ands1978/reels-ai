@@ -6,864 +6,319 @@
 <title>ReelsAI</title>
 
 <style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  background: #09090d;
-  color: white;
-  font-family: Arial, sans-serif;
-}
-
-.container {
-  max-width: 900px;
-  margin: auto;
-  padding: 35px 20px;
-}
-
-.logo {
-  font-size: 30px;
-  font-weight: bold;
-  margin-bottom: 25px;
-}
-
-.logo span {
-  color: #9b5cff;
-}
-
-.card {
-  background: #15151d;
-  border: 1px solid #30303b;
-  border-radius: 18px;
-  padding: 25px;
-}
-
-h1 {
-  margin-top: 0;
-}
-
-.sub {
-  color: #aaa;
-  margin-bottom: 25px;
-}
-
-label {
-  display: block;
-  color: #bbb;
-  margin: 15px 0 8px;
-}
-
-textarea,
-select {
-  width: 100%;
-  background: #0d0d12;
-  color: white;
-  border: 1px solid #373744;
-  border-radius: 10px;
-  padding: 13px;
-  font: inherit;
-}
-
-textarea {
-  min-height: 120px;
-  resize: vertical;
-}
-
-.row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-}
-
-.buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-  margin-top: 20px;
-}
-
-button {
-  border: 0;
-  border-radius: 10px;
-  padding: 15px;
-  background: #8b5cf6;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #7046d5;
-}
-
-button:disabled {
-  opacity: .5;
-  cursor: wait;
-}
-
-.secondary {
-  background: #272735;
-}
-
-.status {
-  margin-top: 18px;
-  color: #aaa;
-}
-
-.reel {
-  margin-top: 18px;
-  padding: 18px;
-  background: #1d1d27;
-  border-radius: 12px;
-}
-
-.scene {
-  padding: 10px 0;
-  border-bottom: 1px solid #30303d;
-  color: #ddd;
-}
-
-.video-area {
-  margin-top: 20px;
-  text-align: center;
-}
-
-.video-area video {
-  width: 320px;
-  max-width: 100%;
-  aspect-ratio: 9 / 16;
-  background: black;
-  border-radius: 15px;
-}
-
-.download {
-  display: inline-block;
-  margin-top: 12px;
-  padding: 13px 20px;
-  background: #22c55e;
-  color: #06120a;
-  border-radius: 10px;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.info {
-  color: #888;
-  font-size: 13px;
-  margin-top: 10px;
-}
-
-@media (max-width: 650px) {
-  .row,
-  .buttons {
-    grid-template-columns: 1fr;
-  }
-}
+* { box-sizing: border-box; }
+body { margin: 0; background: #09090d; color: white; font-family: Arial, sans-serif; }
+.container { max-width: 900px; margin: auto; padding: 35px 20px; }
+.logo { font-size: 30px; font-weight: bold; margin-bottom: 25px; }
+.logo span { color: #9b5cff; }
+.card { background: #15151d; border: 1px solid #30303b; border-radius: 18px; padding: 25px; }
+h1 { margin-top: 0; }
+.sub { color: #aaa; margin-bottom: 25px; }
+label { display: block; color: #bbb; margin: 15px 0 8px; }
+textarea, select { width: 100%; background: #0d0d12; color: white; border: 1px solid #373744; border-radius: 10px; padding: 13px; font: inherit; }
+textarea { min-height: 120px; resize: vertical; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+button { border: 0; border-radius: 10px; padding: 15px; background: #8b5cf6; color: white; font-weight: bold; cursor: pointer; }
+button:hover { background: #7046d5; }
+button:disabled { opacity: .5; cursor: wait; }
+.secondary { background: #272735; }
+.status { margin-top: 18px; color: #aaa; }
+.reel { margin-top: 18px; padding: 18px; background: #1d1d27; border-radius: 12px; }
+.reel-title { display: block; font-size: 18px; margin-bottom: 6px; }
+.reel-meta { color: #999; font-size: 13px; margin-bottom: 10px; }
+.scene { padding: 10px 0; border-bottom: 1px solid #30303d; color: #ddd; }
+.video-area { margin-top: 20px; text-align: center; }
+.video-area video { width: 320px; max-width: 100%; aspect-ratio: 9 / 16; background: black; border-radius: 15px; }
+.download { display: inline-block; margin-top: 12px; padding: 13px 20px; background: #22c55e; color: #06120a; border-radius: 10px; text-decoration: none; font-weight: bold; }
+.info { color: #888; font-size: 13px; margin-top: 10px; }
+@media (max-width: 650px) { .row, .buttons { grid-template-columns: 1fr; } }
 </style>
 </head>
 
 <body>
-
 <div class="container">
-
-  <div class="logo">
-    Reels<span>AI</span>
-  </div>
-
+  <div class="logo">Reels<span>AI</span></div>
   <div class="card">
-
     <h1>Crie seus Reels automaticamente</h1>
+    <div class="sub">Gere o roteiro e transforme as cenas em um vídeo vertical 9:16.</div>
 
-    <div class="sub">
-      Gere o roteiro e transforme as cenas em um vídeo vertical 9:16.
-    </div>
-
-    <label for="idea">
-      Tema do Reel
-    </label>
-
-    <textarea
-      id="idea"
-      placeholder="Ex.: 5 ferramentas de IA para ganhar dinheiro">
-    </textarea>
+    <label for="idea">Tema do Reel</label>
+    <textarea id="idea" placeholder="Ex.: 5 ferramentas de IA para ganhar dinheiro"></textarea>
 
     <div class="row">
-
       <div>
-
-        <label for="duration">
-          Duração
-        </label>
-
+        <label for="duration">Duração</label>
         <select id="duration">
           <option value="30">30 segundos</option>
           <option value="45">45 segundos</option>
           <option value="60">60 segundos</option>
         </select>
-
       </div>
-
       <div>
-
-        <label for="style">
-          Estilo
-        </label>
-
+        <label for="style">Estilo</label>
         <select id="style">
           <option>Viral / rápido</option>
           <option>Educativo</option>
           <option>Motivacional</option>
           <option>Storytelling</option>
         </select>
-
       </div>
-
     </div>
 
     <div class="buttons">
-
-      <button id="btn1" onclick="generate(1)">
-        🎬 GERAR 1 REEL
-      </button>
-
-      <button id="btn10" onclick="generate(10)">
-        ⚡ GERAR 10 REELS
-      </button>
-
+      <button id="btn1" onclick="generate(1)">🎬 GERAR 1 REEL</button>
+      <button id="btn10" onclick="generate(10)">⚡ GERAR 10 REELS</button>
     </div>
 
-    <div id="status" class="status">
-      Digite um tema para começar.
-    </div>
-
+    <div id="status" class="status">Digite um tema para começar.</div>
     <div id="result"></div>
-
   </div>
-
 </div>
 
 <script>
-
 async function generate(count) {
-
-  const idea =
-    document.getElementById("idea").value.trim();
-
-  const duration =
-    Number(document.getElementById("duration").value);
-
-  const style =
-    document.getElementById("style").value;
-
-  const status =
-    document.getElementById("status");
-
-  const result =
-    document.getElementById("result");
+  const idea = document.getElementById("idea").value.trim();
+  const duration = Number(document.getElementById("duration").value);
+  const style = document.getElementById("style").value;
+  const status = document.getElementById("status");
+  const result = document.getElementById("result");
 
   if (!idea) {
-
     alert("Digite um tema primeiro.");
-
     return;
   }
 
   document.getElementById("btn1").disabled = true;
   document.getElementById("btn10").disabled = true;
-
-  status.textContent =
-    "🤖 Criando seu roteiro...";
-
+  status.textContent = "🤖 Criando seu roteiro...";
   result.innerHTML = "";
 
   try {
+    const response = await fetch("/.netlify/functions/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idea, duration, style, count })
+    });
 
-    const response = await fetch(
-      "/.netlify/functions/generate",
-      {
-        method: "POST",
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Erro ao gerar roteiro.");
 
-        headers: {
-          "Content-Type": "application/json"
-        },
+    status.textContent = "✅ Roteiro criado!";
 
-        body: JSON.stringify({
-          idea,
-          duration,
-          style,
-          count
-        })
-      }
-    );
-
-    const data =
-      await response.json();
-
-    if (!response.ok) {
-
-      throw new Error(
-        data.error || "Erro ao gerar roteiro."
-      );
-
-    }
-
-    status.textContent =
-      "✅ Roteiro criado!";
-
-    const reels = data.items.map(
-      (item, index) => createReel({ ...item, index: index + 1 })
+    const reels = data.items.map((item, index) =>
+      createReel({ ...item, index: index + 1 })
     );
 
     if (count === 10) {
       for (let index = 0; index < reels.length; index++) {
         const reelData = reels[index];
-
-        status.textContent =
-          `🎥 Renderizando vídeo ${index + 1} de ${reels.length}...`;
-
+        status.textContent = `🎥 Renderizando vídeo ${index + 1} de ${reels.length}...`;
         await createVideo(
           reelData.item.scenes,
           reelData.videoButton,
-          reelData.reel
+          reelData.reel,
+          reelData.item.index
         );
       }
-
-      status.textContent =
-        "✅ 10 Reels criados e renderizados!";
+      status.textContent = "✅ 10 Reels criados e renderizados!";
     }
-
   } catch (error) {
-
-    status.textContent =
-      "❌ " + error.message;
-
+    status.textContent = "❌ " + error.message;
   }
 
   document.getElementById("btn1").disabled = false;
   document.getElementById("btn10").disabled = false;
 }
 
-
 function createReel(item) {
-
-  const result =
-    document.getElementById("result");
-
-  const reel =
-    document.createElement("div");
-
+  const result = document.getElementById("result");
+  const reel = document.createElement("div");
   reel.className = "reel";
 
-  const title =
-    document.createElement("strong");
-
-  title.textContent =
-    "🎬 Reel " + item.index;
-
+  const title = document.createElement("strong");
+  title.className = "reel-title";
+  title.textContent = "🎬 Reel " + item.index + ": " + (item.titulo || "Sem título");
   reel.appendChild(title);
 
-  item.scenes.forEach(
-    (scene) => {
+  const meta = document.createElement("div");
+  meta.className = "reel-meta";
+  meta.textContent = `Estilo: ${item.style || "viral"} · ${item.duration}s`;
+  reel.appendChild(meta);
 
-      const div =
-        document.createElement("div");
+  item.scenes.forEach((scene) => {
+    const div = document.createElement("div");
+    div.className = "scene";
+    div.textContent = scene.start + "s – " + scene.end + "s: " + scene.text;
+    reel.appendChild(div);
+  });
 
-      div.className = "scene";
-
-      div.textContent =
-        scene.start +
-        "s – " +
-        scene.end +
-        "s: " +
-        scene.text;
-
-      reel.appendChild(div);
-
+  const videoButton = document.createElement("button");
+  videoButton.className = "secondary";
+  videoButton.style.marginTop = "15px";
+  videoButton.textContent = "🎥 GERAR VÍDEO";
+  videoButton.onclick = async function() {
+    try {
+      await createVideo(item.scenes, videoButton, reel, item.index);
+    } catch (error) {
+      videoButton.disabled = false;
+      videoButton.textContent = "🎥 GERAR VÍDEO";
+      document.getElementById("status").textContent = "❌ " + error.message;
     }
-  );
-
-  const videoButton =
-    document.createElement("button");
-
-  videoButton.className =
-    "secondary";
-
-  videoButton.style.marginTop =
-    "15px";
-
-  videoButton.textContent =
-    "🎥 GERAR VÍDEO";
-
-  videoButton.onclick =
-    async function() {
-
-      try {
-        await createVideo(
-          item.scenes,
-          videoButton,
-          reel
-        );
-      } catch (error) {
-        videoButton.disabled = false;
-        videoButton.textContent = "🎥 GERAR VÍDEO";
-
-        document.getElementById("status").textContent =
-          "❌ " + error.message;
-      }
-
-    };
+  };
 
   reel.appendChild(videoButton);
-
   result.appendChild(reel);
 
-  return {
-    item,
-    videoButton,
-    reel
-  };
+  return { item, videoButton, reel };
 }
 
-
-
-function createVideo(
-  scenes,
-  button,
-  reel
-) {
-
+function createVideo(scenes, button, reel, reelNumber = 1) {
   return new Promise((resolve, reject) => {
-
     if (!Array.isArray(scenes) || scenes.length === 0) {
       reject(new Error("O roteiro não possui cenas para renderizar."));
       return;
     }
 
     button.disabled = true;
+    button.textContent = "⏳ Renderizando vídeo...";
 
-    button.textContent =
-      "⏳ Renderizando vídeo...";
-
-    const canvas =
-      document.createElement("canvas");
-
+    const canvas = document.createElement("canvas");
     canvas.width = 540;
     canvas.height = 960;
-
-    const ctx =
-      canvas.getContext("2d");
-
-    const stream =
-      canvas.captureStream(30);
-
-    let mime =
-      "video/webm;codecs=vp9";
-
-    if (!MediaRecorder.isTypeSupported(mime)) {
-
-      mime = "video/webm";
-
-    }
+    const ctx = canvas.getContext("2d");
+    const stream = canvas.captureStream(30);
+    let mime = "video/webm;codecs=vp9";
+    if (!MediaRecorder.isTypeSupported(mime)) mime = "video/webm";
 
     let recorder;
-
     try {
-      recorder = new MediaRecorder(
-        stream,
-        {
-          mimeType: mime,
-          videoBitsPerSecond: 2500000
-        }
-      );
+      recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 2500000 });
     } catch (error) {
       reject(new Error("Este navegador não conseguiu iniciar a renderização do vídeo."));
       return;
     }
 
     const chunks = [];
+    recorder.ondataavailable = function(event) {
+      if (event.data.size) chunks.push(event.data);
+    };
 
-    recorder.ondataavailable =
-      function(event) {
+    recorder.onerror = function() {
+      reject(new Error("Falha durante a renderização do vídeo."));
+    };
 
-        if (event.data.size) {
+    recorder.onstop = function() {
+      const blob = new Blob(chunks, { type: "video/webm" });
+      const url = URL.createObjectURL(blob);
+      const area = document.createElement("div");
+      area.className = "video-area";
 
-          chunks.push(event.data);
+      const video = document.createElement("video");
+      video.controls = true;
+      video.playsInline = true;
+      video.src = url;
 
-        }
+      const download = document.createElement("a");
+      download.href = url;
+      download.download = `reelsai-reel-${String(reelNumber).padStart(2, "0")}.webm`;
+      download.className = "download";
+      download.textContent = "⬇️ BAIXAR REEL";
 
-      };
+      const info = document.createElement("div");
+      info.className = "info";
+      info.textContent = "Vídeo vertical 9:16 criado no navegador.";
 
-
-    recorder.onerror =
-      function() {
-        reject(new Error("Falha durante a renderização do vídeo."));
-      };
-
-
-    recorder.onstop =
-      function() {
-
-        const blob =
-          new Blob(
-            chunks,
-            {
-              type: "video/webm"
-            }
-          );
-
-        const url =
-          URL.createObjectURL(blob);
-
-        const area =
-          document.createElement("div");
-
-        area.className =
-          "video-area";
-
-        const video =
-          document.createElement("video");
-
-        video.controls = true;
-
-        video.playsInline = true;
-
-        video.src = url;
-
-
-        const download =
-          document.createElement("a");
-
-        download.href = url;
-
-        download.download =
-          "reelsai-reel.webm";
-
-        download.className =
-          "download";
-
-        download.textContent =
-          "⬇️ BAIXAR REEL";
-
-
-        const info =
-          document.createElement("div");
-
-        info.className =
-          "info";
-
-        info.textContent =
-          "Vídeo vertical 9:16 criado no navegador.";
-
-        area.appendChild(video);
-
-        area.appendChild(download);
-
-        area.appendChild(info);
-
-        reel.appendChild(area);
-
-        button.remove();
-
-        resolve({ blob, url });
-
-      };
-
+      area.appendChild(video);
+      area.appendChild(download);
+      area.appendChild(info);
+      reel.appendChild(area);
+      button.remove();
+      resolve({ blob, url });
+    };
 
     recorder.start();
-
-
-    const total =
-      Number(scenes[scenes.length - 1].end) * 1000;
-
-
-    const start =
-      performance.now();
-
+    const total = Number(scenes[scenes.length - 1].end) * 1000;
+    const start = performance.now();
 
     function animate(now) {
-
-      const elapsed =
-        now - start;
-
+      const elapsed = now - start;
       if (elapsed >= total) {
-
-        drawScene(
-          scenes[scenes.length - 1],
-          1
-        );
-
+        drawScene(scenes[scenes.length - 1], 1);
         recorder.stop();
-
         return;
-
       }
 
-
-      const seconds =
-        elapsed / 1000;
-
-
-      let current =
-        scenes[scenes.length - 1];
-
-
+      const seconds = elapsed / 1000;
+      let current = scenes[scenes.length - 1];
       let progress = 0;
 
-
       for (const scene of scenes) {
-
-        const startTime =
-          Number(scene.start);
-
-        const endTime =
-          Number(scene.end);
-
-
-        if (
-          seconds >= startTime &&
-          seconds < endTime
-        ) {
-
+        const startTime = Number(scene.start);
+        const endTime = Number(scene.end);
+        if (seconds >= startTime && seconds < endTime) {
           current = scene;
-
-          progress =
-            (
-              seconds - startTime
-            ) /
-            (
-              endTime - startTime
-            );
-
+          progress = (seconds - startTime) / (endTime - startTime);
           break;
-
         }
-
       }
 
-
-      drawScene(
-        current,
-        progress
-      );
-
-
-      requestAnimationFrame(
-        animate
-      );
-
+      drawScene(current, progress);
+      requestAnimationFrame(animate);
     }
 
+    function drawScene(scene, progress) {
+      const gradient = ctx.createLinearGradient(0, 0, 540, 960);
+      gradient.addColorStop(0, "#24143d");
+      gradient.addColorStop(1, "#08080d");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 540, 960);
 
-    function drawScene(
-      scene,
-      progress
-    ) {
+      ctx.fillStyle = "#9b5cff";
+      ctx.fillRect(40, 55, 100, 7);
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 26px Arial";
+      ctx.fillText("ReelsAI", 40, 105);
+      ctx.textAlign = "center";
+      ctx.font = "bold 40px Arial";
 
-      const gradient =
-        ctx.createLinearGradient(
-          0,
-          0,
-          540,
-          960
-        );
+      drawWrappedText(String(scene.text), 270, 430, 440, 52);
 
-      gradient.addColorStop(
-        0,
-        "#24143d"
-      );
-
-      gradient.addColorStop(
-        1,
-        "#08080d"
-      );
-
-
-      ctx.fillStyle =
-        gradient;
-
-      ctx.fillRect(
-        0,
-        0,
-        540,
-        960
-      );
-
-
-      ctx.fillStyle =
-        "#9b5cff";
-
-      ctx.fillRect(
-        40,
-        55,
-        100,
-        7
-      );
-
-
-      ctx.fillStyle =
-        "#ffffff";
-
-      ctx.font =
-        "bold 26px Arial";
-
-      ctx.fillText(
-        "ReelsAI",
-        40,
-        105
-      );
-
-
-      ctx.textAlign =
-        "center";
-
-      ctx.font =
-        "bold 40px Arial";
-
-
-      const text =
-        String(scene.text);
-
-
-      drawWrappedText(
-        text,
-        270,
-        430,
-        440,
-        52
-      );
-
-
-      ctx.font =
-        "18px Arial";
-
-      ctx.fillStyle =
-        "#aaa";
-
-
-      ctx.fillText(
-        "Criado automaticamente",
-        270,
-        850
-      );
-
-
-      ctx.fillStyle =
-        "#ffffff33";
-
-      ctx.fillRect(
-        55,
-        885,
-        430,
-        6
-      );
-
-
-      ctx.fillStyle =
-        "#9b5cff";
-
-      ctx.fillRect(
-        55,
-        885,
-        430 *
-        Math.min(
-          1,
-          progress
-        ),
-        6
-      );
-
-
-      ctx.textAlign =
-        "left";
-
+      ctx.font = "18px Arial";
+      ctx.fillStyle = "#aaa";
+      ctx.fillText("Criado automaticamente", 270, 850);
+      ctx.fillStyle = "#ffffff33";
+      ctx.fillRect(55, 885, 430, 6);
+      ctx.fillStyle = "#9b5cff";
+      ctx.fillRect(55, 885, 430 * Math.min(1, progress), 6);
+      ctx.textAlign = "left";
     }
 
-
-    function drawWrappedText(
-      text,
-      x,
-      y,
-      maxWidth,
-      lineHeight
-    ) {
-
-      const words =
-        text.split(" ");
-
+    function drawWrappedText(text, x, y, maxWidth, lineHeight) {
+      const words = text.split(" ");
       const lines = [];
-
       let line = "";
 
-
-      for (
-        const word of words
-      ) {
-
-        const test =
-          line
-            ? line + " " + word
-            : word;
-
-
-        if (
-          ctx.measureText(test).width >
-          maxWidth &&
-          line
-        ) {
-
+      for (const word of words) {
+        const test = line ? line + " " + word : word;
+        if (ctx.measureText(test).width > maxWidth && line) {
           lines.push(line);
-
           line = word;
-
         } else {
-
           line = test;
-
         }
-
       }
 
-
-      if (line) {
-
-        lines.push(line);
-
-      }
-
-
-      const height =
-        lines.length *
-        lineHeight;
-
-
-      lines.forEach(
-        (lineText, index) => {
-
-          ctx.fillText(
-            lineText,
-            x,
-            y -
-            height / 2 +
-            index *
-            lineHeight
-          );
-
-        }
-      );
-
+      if (line) lines.push(line);
+      const height = lines.length * lineHeight;
+      lines.forEach((lineText, index) => {
+        ctx.fillText(lineText, x, y - height / 2 + index * lineHeight);
+      });
     }
 
-
-    requestAnimationFrame(
-      animate
-    );
-
+    requestAnimationFrame(animate);
   });
 }
-
 </script>
-
 </body>
 </html>
