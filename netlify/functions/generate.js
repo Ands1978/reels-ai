@@ -11,7 +11,7 @@ function normalizeStyle(value) {
 }
 
 function cleanText(value) {
-  return String(value || "").replace(/\\s+/g, " ").trim();
+  return String(value || "").replace(/\s+/g, " ").trim();
 }
 
 function buildScenes(script, duration) {
@@ -33,7 +33,7 @@ function buildScenes(script, duration) {
 function extractJson(text) {
   const value = cleanText(text);
   try { return JSON.parse(value); } catch (_) {}
-  const match = value.match(/\\{[\\s\\S]*\\}/);
+  const match = value.match(/\{[\s\S]*\}/);
   if (match) return JSON.parse(match[0]);
   throw new Error("A IA retornou uma resposta em formato inválido.");
 }
