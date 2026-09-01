@@ -65,7 +65,7 @@ export default async function handler(request, context) {
     if(document.getElementById('reelsAiToolsPanel')) return;
     const input=document.getElementById('globalFiles');
     if(!input || !input.parentElement) return;
-    input.parentElement.insertAdjacentHTML('afterend', '<div id="reelsAiToolsPanel" class="notice" style="margin-top:12px"><b>🧰 FERRAMENTAS IA INTEGRADAS</b><div class="buttons" style="margin-top:10px"><button id="toolMusic" class="secondary">🎵 Eleven Music</button><button id="toolVoice" class="secondary">🎙️ ElevenLabs Voz</button><button id="toolVibes" class="secondary">✨ Vibes</button><button id="toolLeonardo" class="secondary">🎨 Leonardo.ai</button><button id="toolGemini" class="secondary">✨ Gemini</button><button id="toolCapcutMusic" class="secondary">🎵 CapCut Música</button><button id="toolCapcutEditor" class="secondary">🎬 CapCut Editor</button></div><div class="hint" style="margin-top:8px">Os botões abrem as ferramentas oficiais e copiam automaticamente um prompt pronto baseado no tema do Reel.</div></div><div id="reelsAiToolsNotice" class="notice">🎵 <b>Música:</b> o MusicGen gratuito foi removido. Agora o fluxo usa <b>Eleven Music</b>, que aceita prompts para trilhas instrumentais e música para vídeo.</div>');
+    input.parentElement.insertAdjacentHTML('afterend', '<div id="reelsAiToolsPanel" class="notice" style="margin-top:12px"><b>🧰 FERRAMENTAS IA INTEGRADAS</b><div class="buttons" style="margin-top:10px"><button id="toolMusic" class="secondary">🎵 Eleven Music</button><button id="toolVoice" class="secondary">🎙️ ElevenLabs Voz</button><button id="toolVibes" class="secondary">✨ Vibes</button><button id="toolVibesInstall" class="secondary">⬇ Instalar Vibes</button><button id="toolLeonardo" class="secondary">🎨 Leonardo.ai</button><button id="toolGemini" class="secondary">✨ Gemini</button><button id="toolCapcutMusic" class="secondary">🎵 CapCut Música</button><button id="toolCapcutEditor" class="secondary">🎬 CapCut Editor</button></div><div class="hint" style="margin-top:8px">Os botões abrem as ferramentas oficiais e copiam automaticamente um prompt pronto baseado no tema do Reel.</div></div><div id="reelsAiToolsNotice" class="notice">🎵 <b>Música:</b> o MusicGen gratuito foi removido. Agora o fluxo usa <b>Eleven Music</b>, que aceita prompts para trilhas instrumentais e música para vídeo.</div>');
 
     document.getElementById('toolMusic')?.addEventListener('click', async ()=>{
       const ok=await copyPrompt(musicPrompt());
@@ -83,6 +83,10 @@ export default async function handler(request, context) {
       await copyPrompt(imagePrompt());
       setStatus('✨ Prompt visual copiado. Vibes aberto para criar imagens e vídeos.','ok');
       openTool(URLS.vibes);
+    });
+    document.getElementById('toolVibesInstall')?.addEventListener('click', ()=>{
+      setStatus('⬇ Página oficial de instalação do Vibes aberta.','ok');
+      openTool(URLS.vibesDownload);
     });
     document.getElementById('toolLeonardo')?.addEventListener('click', async ()=>{
       await copyPrompt(imagePrompt());
