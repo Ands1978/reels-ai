@@ -33,9 +33,7 @@ const STYLE_TEMPLATES = {
   }
 };
 
-function fill(template, tema) {
-  return template.replaceAll("{tema}", tema);
-}
+function fill(template, tema) { return template.replaceAll("{tema}", tema); }
 
 function createScript(idea, duration, variation = 0, style = "viral") {
   const tema = idea.trim();
@@ -62,16 +60,11 @@ function createScript(idea, duration, variation = 0, style = "viral") {
 
 exports.handler = async function(event) {
   try {
-    if (event.httpMethod !== "POST") {
-      return { statusCode: 405, headers: { "content-type": "application/json" }, body: JSON.stringify({ error: "Método não permitido." }) };
-    }
+    if (event.httpMethod !== "POST") return { statusCode: 405, headers: { "content-type": "application/json" }, body: JSON.stringify({ error: "Método não permitido." }) };
 
     let data;
-    try {
-      data = JSON.parse(event.body || "{}");
-    } catch (error) {
-      return { statusCode: 400, headers: { "content-type": "application/json" }, body: JSON.stringify({ error: "JSON inválido." }) };
-    }
+    try { data = JSON.parse(event.body || "{}"); }
+    catch (error) { return { statusCode: 400, headers: { "content-type": "application/json" }, body: JSON.stringify({ error: "JSON inválido." }) }; }
 
     const idea = String(data.idea || data.ideia || "").trim();
     const durationValue = Number(data.duration || data.duracao || 30);
@@ -81,18 +74,12 @@ exports.handler = async function(event) {
     const variation = Number(data.variation || 0);
     const style = normalizeStyle(data.style || data.estilo);
 
-    if (!idea) {
-      return { statusCode: 400, headers: { "content-type": "application/json" }, body: JSON.stringify({ error: "Informe o tema do Reel." }) };
-    }
+    if (!idea) return { statusCode: 400, headers: { "content-type": "application/json" }, body: JSON.stringify({ error: "Informe o tema do Reel." }) };
 
     const items = [];
     for (let i = 0; i < count; i++) items.push(createScript(idea, duration, variation + i, style));
 
-    return {
-      statusCode: 200,
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ id: require("crypto").randomUUID(), idea, style, count: items.length, items })
-    };
+    return { statusCode: 200, headers: { "content-type": "application/json" }, body: JSON.stringify({ id: require("crypto").randomUUID(), idea, style, count: items.length, items }) };
   } catch (error) {
     console.error(error);
     return { statusCode: 500, headers: { "content-type": "application/json" }, body: JSON.stringify({ error: error.message || "Erro ao gerar os Reels." }) };
