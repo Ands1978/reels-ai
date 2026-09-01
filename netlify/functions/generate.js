@@ -20,41 +20,35 @@ function createScript(idea, duration, variation = 0) {
         titulo: "Prestar serviços com IA",
         texto: "Você não precisa criar uma inteligência artificial. Pode usar ferramentas que já existem para oferecer edição, pesquisa, atendimento ou produção de conteúdo como serviço."
       },
+           {
+        titulo: "Criar soluções para nichos",
+        texto: "Escolha um mercado específico e descubra um problema que ele enfrenta. Depois use inteligência artificial para criar uma solução simples e cobrar por ela."
+      },
       {
-       {
-  titulo: "Criar soluções para nichos",
-  texto: "..."
-},
-{
-  titulo: "Criar vídeos com IA",r ela."
-      ,
-{
-  titulo: "Criar vídeos com IA",
-  texto: "Você pode usar inteligência artificial para criar vídeos curtos para empresas, produtos e redes sociais e transformar isso em um serviço."
-},
-{
-  titulo: "Criar posts para redes sociais",
-  texto: "Empresas precisam publicar constantemente. Você pode usar inteligência artificial para criar calendários, posts e legendas e cobrar por esse trabalho."
-},
-{
-  titulo: "Criar anúncios com IA",
-  texto: "A inteligência artificial pode ajudar a criar ideias de anúncios, textos e variações para campanhas de empresas que querem vender mais."
-},
-{
-  titulo: "Criar conteúdo para profissionais",
-  texto: "Dentistas, médicos, advogados, corretores e outros profissionais precisam de conteúdo. Você pode usar inteligência artificial para produzir materiais para eles."
-},
-{
-  
-  titulo: "Criar um negócio com automação",
-  texto: "Pequenas automações podem economizar horas de trabalho. Você pode encontrar tarefas repetitivas e transformar a solução em um serviço."
-}
-
-
+        titulo: "Criar vídeos com IA",
+        texto: "Você pode usar inteligência artificial para criar vídeos curtos para empresas, produtos e redes sociais e transformar isso em um serviço."
+      },
+      {
+        titulo: "Criar posts para redes sociais",
+        texto: "Empresas precisam publicar constantemente. Você pode usar inteligência artificial para criar calendários, posts e legendas e cobrar por esse trabalho."
+      },
+      {
+        titulo: "Criar anúncios com IA",
+        texto: "A inteligência artificial pode ajudar a criar ideias de anúncios, textos e variações para campanhas de empresas que querem vender mais."
+      },
+      {
+        titulo: "Criar conteúdo para profissionais",
+        texto: "Dentistas, médicos, advogados, corretores e outros profissionais precisam de conteúdo. Você pode usar inteligência artificial para produzir materiais para eles."
+      },
+      {
+        titulo: "Criar um negócio com automação",
+        texto: "Pequenas automações podem economizar horas de trabalho. Você pode encontrar tarefas repetitivas e transformar a solução em um serviço."
+      }
     ],
 
     marketing: [
       {
+      
         titulo: "Comece pelo problema",
         texto: "Antes de criar uma campanha, descubra qual problema o cliente realmente quer resolver. Uma mensagem específica costuma chamar mais atenção do que uma mensagem genérica."
       },
@@ -344,7 +338,7 @@ exports.handler = async function(event) {
         "content-type": "application/json"
       },
       body: JSON.stringify({
-        id: crypto.randomUUID(),
+id: require("crypto").randomUUID(),
         idea,
         count: items.length,
         items
@@ -360,7 +354,7 @@ exports.handler = async function(event) {
         "content-type": "application/json"
       },
       body: JSON.stringify({
-        error: "Erro ao gerar os Reels."
+        error: error.message || "Erro ao gerar os Reels."
       })
     };
   }
