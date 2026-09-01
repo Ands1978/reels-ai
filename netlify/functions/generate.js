@@ -23,7 +23,27 @@ function createScript(idea, duration, variation = 0) {
       {
         titulo: "Criar soluções para nichos",
         texto: "Escolha um mercado específico e descubra um problema que ele enfrenta. Depois use inteligência artificial para criar uma solução simples e cobrar por ela."
-      }
+      ,
+{
+  titulo: "Criar vídeos com IA",
+  texto: "Você pode usar inteligência artificial para criar vídeos curtos para empresas, produtos e redes sociais e transformar isso em um serviço."
+},
+{
+  titulo: "Criar posts para redes sociais",
+  texto: "Empresas precisam publicar constantemente. Você pode usar inteligência artificial para criar calendários, posts e legendas e cobrar por esse trabalho."
+},
+{
+  titulo: "Criar anúncios com IA",
+  texto: "A inteligência artificial pode ajudar a criar ideias de anúncios, textos e variações para campanhas de empresas que querem vender mais."
+},
+{
+  titulo: "Criar conteúdo para profissionais",
+  texto: "Dentistas, médicos, advogados, corretores e outros profissionais precisam de conteúdo. Você pode usar inteligência artificial para produzir materiais para eles."
+},
+{
+  titulo: "Criar um negócio com automação",
+  texto: "Pequenas automações podem economizar horas de trabalho. Você pode encontrar tarefas repetitivas e transformar a solução em um serviço."
+}}
     ],
 
     marketing: [
