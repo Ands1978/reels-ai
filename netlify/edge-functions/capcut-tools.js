@@ -5,6 +5,13 @@ const TOOLS = {
   vibesDownload: 'https://vibes.ai/download-now',
   leonardo: 'https://app.leonardo.ai/',
   gemini: 'https://gemini.google.com/',
+  nanoBanana: 'https://gemini.google.com/',
+  geminiCanvas: 'https://gemini.google.com/',
+  stitch: 'https://stitch.withgoogle.com/',
+  build: 'https://aistudio.google.com/',
+  opal: 'https://opal.google/',
+  notebooklm: 'https://notebooklm.google/',
+  pomelli: 'https://labs.google/',
   capcutMusic: 'https://www.capcut.com/tools/ai-music-generator',
   capcutEditor: 'https://www.capcut.com/pt-br/',
 };
@@ -17,11 +24,6 @@ export default async function handler(request, context) {
 
   const html = await response.text();
   if (html.includes('reelsAiToolsInjected')) {
-    return new Response(html, { status: response.status, statusText: response.statusText, headers: response.headers });
-  }
-
-  const anchor = '<input id="globalFiles" class="hidden" type="file" accept="image/*,video/*" multiple></div>';
-  if (!html.includes(anchor)) {
     return new Response(html, { status: response.status, statusText: response.statusText, headers: response.headers });
   }
 
@@ -47,9 +49,44 @@ export default async function handler(request, context) {
     return 'Create a professional 9:16 vertical visual for a social media Reel about '+idea+'. '+style+' style, cinematic lighting, strong composition, realistic details, high contrast, no text, no watermark, optimized for mobile.';
   }
 
+  function nanoPrompt(){
+    const {idea,style}=getContext();
+    return 'Use Nano Banana to create or edit a high-quality 9:16 vertical image for a Reel about '+idea+'. '+style+' style, preserve subject consistency, realistic details, cinematic lighting, accurate readable text only if requested, no watermark.';
+  }
+
   function scriptPrompt(){
     const {idea,style}=getContext();
     return 'Crie um roteiro profissional para um Reel vertical sobre '+idea+'. Estilo '+style+'. Gere gancho forte nos primeiros segundos, cenas numeradas, narração em português, texto de legenda por cena, sugestões visuais e CTA final.';
+  }
+
+  function buildPrompt(){
+    const {idea,style}=getContext();
+    return 'Build a production-ready web app for a professional vertical Reel workflow about '+idea+'. Style '+style+'. Include a clean UI, scene timeline, media handling, captions, export flow and AI-ready integration points.';
+  }
+
+  function stitchPrompt(){
+    const {idea,style}=getContext();
+    return 'Design a high-fidelity UI in Stitch for a professional Reel editor about '+idea+'. '+style+' visual direction, dark premium interface, 9:16 preview, timeline, scene controls, captions, media library and export actions.';
+  }
+
+  function opalPrompt(){
+    const {idea,style}=getContext();
+    return 'Create an AI mini-app in Opal that helps produce a professional Reel about '+idea+'. '+style+' style. Workflow: idea, hook, script, scene plan, visual prompts, captions and final CTA.';
+  }
+
+  function notebookPrompt(){
+    const {idea}=getContext();
+    return 'Research and organize reliable source material for a Reel about '+idea+'. Extract key facts, useful quotes, contradictions, a concise briefing and a source-grounded outline for a short vertical video.';
+  }
+
+  function pomelliPrompt(){
+    const {idea,style}=getContext();
+    return 'Create on-brand marketing content for a business/social campaign around '+idea+'. '+style+' style. Generate a consistent visual direction, campaign messaging, social posts and Reel creative concepts.';
+  }
+
+  function canvasPrompt(){
+    const {idea,style}=getContext();
+    return 'Use Gemini Canvas to create a working Reel content workspace about '+idea+'. '+style+' style. Build an editable script, scene table, captions, visual prompts, CTA and a production checklist.';
   }
 
   async function copyPrompt(prompt){
@@ -61,49 +98,64 @@ export default async function handler(request, context) {
     if(el){el.textContent=msg;el.className='status '+(type||'')}
   }
 
+  function wire(id,url,prompt,label){
+    document.getElementById(id)?.addEventListener('click',async()=>{
+      const ok=prompt?await copyPrompt(prompt()):false;
+      setStatus(ok?''+label+' aberto. Prompt copiado para a área de transferência.':label+' aberto.','ok');
+      openTool(url);
+    });
+  }
+
   function injectPanel(){
     if(document.getElementById('reelsAiToolsPanel')) return;
     const input=document.getElementById('globalFiles');
     if(!input || !input.parentElement) return;
-    input.parentElement.insertAdjacentHTML('afterend', '<div id="reelsAiToolsPanel" class="notice" style="margin-top:12px"><b>🧰 FERRAMENTAS IA INTEGRADAS</b><div class="buttons" style="margin-top:10px"><button id="toolMusic" class="secondary">🎵 Eleven Music</button><button id="toolVoice" class="secondary">🎙️ ElevenLabs Voz</button><button id="toolVibes" class="secondary">✨ Vibes</button><button id="toolVibesInstall" class="secondary">⬇ Instalar Vibes</button><button id="toolLeonardo" class="secondary">🎨 Leonardo.ai</button><button id="toolGemini" class="secondary">✨ Gemini</button><button id="toolCapcutMusic" class="secondary">🎵 CapCut Música</button><button id="toolCapcutEditor" class="secondary">🎬 CapCut Editor</button></div><div class="hint" style="margin-top:8px">Os botões abrem as ferramentas oficiais e copiam automaticamente um prompt pronto baseado no tema do Reel.</div></div><div id="reelsAiToolsNotice" class="notice">🎵 <b>Música:</b> o MusicGen gratuito foi removido. Agora o fluxo usa <b>Eleven Music</b>, que aceita prompts para trilhas instrumentais e música para vídeo.</div>');
+    input.parentElement.insertAdjacentHTML('afterend', `
+      <div id="reelsAiToolsPanel" class="notice" style="margin-top:12px">
+        <b>🧰 CENTRAL DE FERRAMENTAS IA</b>
+        <div class="buttons" style="margin-top:10px">
+          <button id="toolMusic" class="secondary">🎵 Eleven Music</button>
+          <button id="toolVoice" class="secondary">🎙️ ElevenLabs</button>
+          <button id="toolVibes" class="secondary">✨ Vibes</button>
+          <button id="toolVibesInstall" class="secondary">⬇ Instalar Vibes</button>
+          <button id="toolLeonardo" class="secondary">🎨 Leonardo.ai</button>
+          <button id="toolNano" class="secondary">🍌 Nano Banana</button>
+          <button id="toolGemini" class="secondary">✨ Gemini</button>
+          <button id="toolCanvas" class="secondary">🖼️ Gemini Canvas</button>
+          <button id="toolStitch" class="secondary">🧩 Stitch</button>
+          <button id="toolBuild" class="secondary">🛠️ Build</button>
+          <button id="toolOpal" class="secondary">💎 Opal</button>
+          <button id="toolNotebook" class="secondary">📚 NotebookLM</button>
+          <button id="toolPomelli" class="secondary">📣 Pomelli</button>
+          <button id="toolCapcutMusic" class="secondary">🎵 CapCut Música</button>
+          <button id="toolCapcutEditor" class="secondary">🎬 CapCut Editor</button>
+        </div>
+        <div class="hint" style="margin-top:8px">As ferramentas oficiais são abertas em nova aba. Quando fizer sentido, o aplicativo copia automaticamente um prompt pronto baseado no tema do Reel.</div>
+      </div>
+      <div id="reelsAiToolsNotice" class="notice">🚀 <b>Fluxo profissional:</b> roteiro → pesquisa → imagens/vídeos → design → música/voz → timeline → exportação.</div>
+    `);
 
-    document.getElementById('toolMusic')?.addEventListener('click', async ()=>{
-      const ok=await copyPrompt(musicPrompt());
-      setStatus(ok?'🎵 Prompt musical copiado. Eleven Music aberto para gerar a trilha.':'🎵 Abrindo Eleven Music para gerar a trilha.','ok');
-      openTool(URLS.elevenMusic);
-    });
-    document.getElementById('toolVoice')?.addEventListener('click', async ()=>{
+    wire('toolMusic',URLS.elevenMusic,musicPrompt,'🎵 Eleven Music');
+    wire('toolVoice',URLS.eleven,()=>{
       const {idea}=getContext();
-      const prompt='Narração em português do Brasil para um Reel sobre '+idea+'. Voz natural, clara, envolvente, ritmo profissional, sem música e sem efeitos.';
-      await copyPrompt(prompt);
-      setStatus('🎙️ Prompt de narração copiado. ElevenLabs aberto.','ok');
-      openTool(URLS.eleven);
-    });
-    document.getElementById('toolVibes')?.addEventListener('click', async ()=>{
-      await copyPrompt(imagePrompt());
-      setStatus('✨ Prompt visual copiado. Vibes aberto para criar imagens e vídeos.','ok');
-      openTool(URLS.vibes);
-    });
-    document.getElementById('toolVibesInstall')?.addEventListener('click', ()=>{
+      return 'Narração em português do Brasil para um Reel sobre '+idea+'. Voz natural, clara, envolvente, ritmo profissional, sem música e sem efeitos.';
+    },'🎙️ ElevenLabs');
+    wire('toolVibes',URLS.vibes,imagePrompt,'✨ Vibes');
+    document.getElementById('toolVibesInstall')?.addEventListener('click',()=>{
       setStatus('⬇ Página oficial de instalação do Vibes aberta.','ok');
       openTool(URLS.vibesDownload);
     });
-    document.getElementById('toolLeonardo')?.addEventListener('click', async ()=>{
-      await copyPrompt(imagePrompt());
-      setStatus('🎨 Prompt visual copiado. Leonardo.ai aberto para gerar a mídia.','ok');
-      openTool(URLS.leonardo);
-    });
-    document.getElementById('toolGemini')?.addEventListener('click', async ()=>{
-      await copyPrompt(scriptPrompt());
-      setStatus('✨ Prompt de roteiro copiado. Gemini aberto para refinar o conteúdo.','ok');
-      openTool(URLS.gemini);
-    });
-    document.getElementById('toolCapcutMusic')?.addEventListener('click', async ()=>{
-      await copyPrompt(musicPrompt());
-      setStatus('🎵 Prompt musical copiado. CapCut Música aberto.','ok');
-      openTool(URLS.capcutMusic);
-    });
-    document.getElementById('toolCapcutEditor')?.addEventListener('click', ()=>{
+    wire('toolLeonardo',URLS.leonardo,imagePrompt,'🎨 Leonardo.ai');
+    wire('toolNano',URLS.nanoBanana,nanoPrompt,'🍌 Nano Banana');
+    wire('toolGemini',URLS.gemini,scriptPrompt,'✨ Gemini');
+    wire('toolCanvas',URLS.geminiCanvas,canvasPrompt,'🖼️ Gemini Canvas');
+    wire('toolStitch',URLS.stitch,stitchPrompt,'🧩 Stitch');
+    wire('toolBuild',URLS.build,buildPrompt,'🛠️ Google AI Studio Build');
+    wire('toolOpal',URLS.opal,opalPrompt,'💎 Opal');
+    wire('toolNotebook',URLS.notebooklm,notebookPrompt,'📚 NotebookLM');
+    wire('toolPomelli',URLS.pomelli,pomelliPrompt,'📣 Pomelli');
+    wire('toolCapcutMusic',URLS.capcutMusic,musicPrompt,'🎵 CapCut Música');
+    document.getElementById('toolCapcutEditor')?.addEventListener('click',()=>{
       setStatus('🎬 CapCut Editor aberto para finalizar o Reel.','ok');
       openTool(URLS.capcutEditor);
     });
@@ -111,22 +163,20 @@ export default async function handler(request, context) {
 
   function refreshLabels(){
     const global=document.getElementById('musicGlobal');
-    if(global && global.textContent!=='🎵 ABRIR ELEVEN MUSIC') global.textContent='🎵 ABRIR ELEVEN MUSIC';
-
+    if(global) global.textContent='🎵 ABRIR ELEVEN MUSIC';
     document.querySelectorAll('.musicbox').forEach(box=>{
       const b=box.querySelector('b');
-      if(b && b.textContent!=='🎵 Fundo musical · Eleven Music') b.textContent='🎵 Fundo musical · Eleven Music';
+      if(b) b.textContent='🎵 Fundo musical · Eleven Music';
       const hint=box.querySelector('.hint');
-      if(hint && !box.querySelector('audio') && hint.textContent!=='Abra o Eleven Music com um prompt pronto para criar a trilha instrumental do Reel.') hint.textContent='Abra o Eleven Music com um prompt pronto para criar a trilha instrumental do Reel.';
+      if(hint && !box.querySelector('audio')) hint.textContent='Abra o Eleven Music com um prompt pronto para criar a trilha instrumental do Reel.';
       const button=box.querySelector('[data-act="music"]');
-      if(button && button.textContent!=='Abrir Eleven Music') button.textContent='Abrir Eleven Music';
+      if(button) button.textContent='Abrir Eleven Music';
       const name=box.querySelector('.hint');
       if(name && box.querySelector('audio') && name.textContent.includes('MusicGen')) name.textContent=name.textContent.replace(/MusicGen/g,'Eleven Music');
     });
-
     document.querySelectorAll('.notice').forEach(n=>{
       if(n.textContent.includes('Meta MusicGen')) n.innerHTML='🎵 <b>Música:</b> o MusicGen foi substituído pelo <b>Eleven Music</b>.';
-      if(n.textContent.includes('Meta Vibes')) n.innerHTML='🎨 <b>Fluxo:</b> roteiro → Vibes / Leonardo.ai → timeline → legenda → Eleven Music → exportação.';
+      if(n.textContent.includes('Meta Vibes')) n.innerHTML='🎨 <b>Fluxo:</b> Vibes / Leonardo.ai / Nano Banana → timeline → legenda → Eleven Music → exportação.';
     });
   }
 
@@ -140,9 +190,7 @@ export default async function handler(request, context) {
     injectPanel();
     refreshLabels();
     const workspace=document.getElementById('workspace');
-    if(workspace){
-      new MutationObserver(refreshLabels).observe(workspace,{childList:true,subtree:true});
-    }
+    if(workspace)new MutationObserver(refreshLabels).observe(workspace,{childList:true,subtree:true});
   }
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
