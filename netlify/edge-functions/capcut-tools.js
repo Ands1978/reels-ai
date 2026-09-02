@@ -106,6 +106,19 @@ export default async function handler(request, context) {
     });
   }
 
+  function addMp3ToActiveReel(file){
+    if(!file || !file.type.toLowerCase().includes('audio')) return;
+    if(typeof state==='undefined' || !state.reels?.length){
+      if(typeof ensureReel==='function') ensureReel();
+    }
+    const reel=state.reels[state.active];
+    if(!reel) return;
+    if(reel.music?.url && reel.music.url.startsWith('blob:')) URL.revokeObjectURL(reel.music.url);
+    reel.music={url:URL.createObjectURL(file),name:file.name,volume:.18};
+    if(typeof render==='function') render();
+    setStatus('✅ MP3 aplicado como fundo musical no Reel '+(state.active+1)+'.','ok');
+  }
+
   function injectPanel(){
     if(document.getElementById('reelsAiToolsPanel')) return;
     const input=document.getElementById('globalFiles');
@@ -116,6 +129,8 @@ export default async function handler(request, context) {
       '<b>🧰 CENTRAL DE FERRAMENTAS IA</b>',
       '<div class="buttons" style="margin-top:10px">',
       '<button id="toolMusic" class="secondary">🎵 Eleven Music</button>',
+      '<button id="toolMp3" class="secondary">🎵 ADICIONAR MP3</button>',
+      '<input id="toolMp3Input" class="hidden" type="file" accept="audio/mpeg,.mp3,audio/*">',
       '<button id="toolVoice" class="secondary">🎙️ ElevenLabs</button>',
       '<button id="toolVibes" class="secondary">✨ Vibes</button>',
       '<button id="toolVibesInstall" class="secondary">⬇ Instalar Vibes</button>',
@@ -139,6 +154,12 @@ export default async function handler(request, context) {
     input.parentElement.insertAdjacentHTML('afterend', panelHtml);
 
     wire('toolMusic',URLS.elevenMusic,musicPrompt,'🎵 Eleven Music');
+    document.getElementById('toolMp3')?.addEventListener('click',()=>document.getElementById('toolMp3Input')?.click());
+    document.getElementById('toolMp3Input')?.addEventListener('change',e=>{
+      const file=e.target.files?.[0];
+      if(file) addMp3ToActiveReel(file);
+      e.target.value='';
+    });
     wire('toolVoice',URLS.eleven,()=>{
       const {idea}=getContext();
       return 'Narração em português do Brasil para um Reel sobre '+idea+'. Voz natural, clara, envolvente, ritmo profissional, sem música e sem efeitos.';
