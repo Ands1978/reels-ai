@@ -107,6 +107,10 @@ function hasGateway(name, baseName) {
   return Boolean(process.env[name] || process.env[baseName]);
 }
 
+function hasNetlifyGateway() {
+  return Boolean(process.env.NETLIFY_AI_GATEWAY_KEY && process.env.NETLIFY_AI_GATEWAY_BASE_URL);
+}
+
 async function callClaude({ idea, duration, style, count }) {
   const baseURL = process.env.ANTHROPIC_BASE_URL || "https://api.anthropic.com";
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -148,8 +152,11 @@ async function callPerplexity({ idea, duration, style, count }) {
 }
 
 async function callOpenAI({ idea, duration, style, count }) {
-  if (!process.env.OPENAI_API_KEY) throw new Error("OPENAI_API_KEY não disponível.");
-  const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, baseURL: process.env.OPENAI_BASE_URL || undefined });
+  const apiKey = process.env.OPENAI_API_KEY || process.env.NETLIFY_AI_GATEWAY_KEY;
+  const baseURL = process.env.OPENAI_BASE_URL || process.env.NETLIFY_AI_GATEWAY_BASE_URL;
+  if (!apiKey || !baseURL) throw new Error("OpenAI/Netlify AI Gateway não disponível.");
+
+  const client = new OpenAI({ apiKey, baseURL });
   const response = await client.responses.create({
     model: process.env.OPENAI_MODEL || "gpt-4.1",
     instructions: generationInstructions({ idea, duration, style, count }),
@@ -197,7 +204,7 @@ async function generateWithAI({ idea, duration, style, count }) {
   for (const [name, fn] of attempts) {
     try {
       if (name === "claude" && !hasGateway("ANTHROPIC_API_KEY", "ANTHROPIC_BASE_URL")) continue;
-      if (name === "openai" && !hasGateway("OPENAI_API_KEY", "OPENAI_BASE_URL")) continue;
+      if (name === "openai" && !hasGateway("OPENAI_API_KEY", "OPENAI_BASE_URL") && !hasNetlifyGateway()) continue;
       if (name === "perplexity" && !process.env.PERPLEXITY_API_KEY) continue;
       const result = await fn({ idea, duration, style, count });
       if (!result.parsed?.reels?.length) throw new Error(`${name} não retornou roteiros.`);
