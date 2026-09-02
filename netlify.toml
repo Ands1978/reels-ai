@@ -16,6 +16,13 @@
   status = 200
   force = true
 
+# Keep the existing frontend URL, but send generation through the resilient function.
+[[redirects]]
+  from = "/.netlify/functions/generate"
+  to = "/.netlify/functions/generate-safe"
+  status = 200
+  force = true
+
 # Simple API health endpoint.
 [[redirects]]
   from = "/api/health"
