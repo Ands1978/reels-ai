@@ -5,151 +5,37 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Entrar — ReelsAI Studio</title>
 <style>
-:root{--bg:#07070b;--panel:#11111a;--line:#30303b;--text:#f8f8fb;--muted:#a4a4b2;--accent:#8b5cf6;--danger:#ff7180;--ok:#6fe39a}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% -10%,#29164a 0,#09090f 48%,#050509 100%);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif}.card{width:min(430px,100%);background:rgba(17,17,26,.96);border:1px solid var(--line);border-radius:24px;padding:28px;box-shadow:0 30px 90px rgba(0,0,0,.4)}.brand{font-size:27px;font-weight:950;letter-spacing:-.05em}.brand i{font-style:normal;color:#a978ff}.tag{margin:8px 0 24px;color:var(--muted);line-height:1.5;font-size:13px}label{display:block;margin:12px 0 6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;color:#bdbdc8}input{width:100%;padding:13px;border-radius:11px;border:1px solid #3b3b47;background:#09090e;color:#fff;font:inherit;outline:none}button{width:100%;margin-top:14px;padding:13px 15px;border:0;border-radius:11px;background:linear-gradient(135deg,#9b5cf6,#7140d4);color:#fff;font-weight:900;cursor:pointer}button.secondary{background:#272732}button:disabled{opacity:.55;cursor:wait}.notice{margin-top:15px;padding:11px 12px;border-radius:11px;border:1px solid #30303b;background:#0b0b11;color:var(--muted);font-size:11px;line-height:1.5}.status{min-height:20px;margin-top:14px;font-size:12px;color:var(--muted)}.status.error{color:var(--danger)}.status.ok{color:var(--ok)}.user{display:none;margin-top:18px;padding:13px;border-radius:12px;background:#0b0b11;border:1px solid #30303b}.user b{display:block;margin-bottom:5px}.links{display:flex;gap:8px;margin-top:10px}.links a{color:#cdb4ff;font-weight:800;text-decoration:none;font-size:12px}
+:root{--bg:#07070b;--panel:#11111a;--line:#30303b;--text:#f8f8fb;--muted:#a4a4b2;--accent:#8b5cf6;--danger:#ff7180;--ok:#6fe39a}*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% -10%,#29164a 0,#09090f 48%,#050509 100%);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif}.card{width:min(430px,100%);background:rgba(17,17,26,.97);border:1px solid var(--line);border-radius:24px;padding:28px;box-shadow:0 30px 90px rgba(0,0,0,.4)}.brand{font-size:27px;font-weight:950;letter-spacing:-.05em}.brand i{font-style:normal;color:#a978ff}.tag{margin:8px 0 24px;color:var(--muted);line-height:1.5;font-size:13px}label{display:block;margin:12px 0 6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;color:#bdbdc8}input{width:100%;padding:13px;border-radius:11px;border:1px solid #3b3b47;background:#09090e;color:#fff;font:inherit;outline:none}button{width:100%;margin-top:14px;padding:13px 15px;border:0;border-radius:11px;background:linear-gradient(135deg,#9b5cf6,#7140d4);color:#fff;font-weight:900;cursor:pointer}button.secondary{background:#272732}button:disabled{opacity:.55;cursor:wait}.notice{margin-top:15px;padding:11px 12px;border-radius:11px;border:1px solid #30303b;background:#0b0b11;color:var(--muted);font-size:11px;line-height:1.5}.status{min-height:20px;margin-top:14px;font-size:12px;color:var(--muted)}.status.error{color:var(--danger)}.status.ok{color:var(--ok)}.user{display:none;margin-top:18px;padding:13px;border-radius:12px;background:#0b0b11;border:1px solid #30303b}.user b{display:block;margin-bottom:5px}.links{display:flex;gap:8px;margin-top:10px}.links a{color:#cdb4ff;font-weight:800;text-decoration:none;font-size:12px}
 </style>
 </head>
 <body>
 <main class="card">
-  <div class="brand">Reels<i>AI</i> Studio</div>
-  <div class="tag">Área exclusiva para clientes. Use o e-mail e a senha cadastrados no acesso.</div>
-
-  <section id="loginBox">
-    <label for="email">E-mail</label>
-    <input id="email" type="email" autocomplete="username" placeholder="cliente@empresa.com">
-    <label for="password">Senha</label>
-    <input id="password" type="password" autocomplete="current-password" placeholder="Sua senha">
-    <button id="login">Entrar no aplicativo</button>
-    <button id="recover" class="secondary">Esqueci minha senha</button>
-  </section>
-
-  <section id="setPasswordBox" style="display:none">
-    <label for="newPassword">Nova senha</label>
-    <input id="newPassword" type="password" autocomplete="new-password" placeholder="Crie uma senha segura">
-    <label for="confirmPassword">Confirmar nova senha</label>
-    <input id="confirmPassword" type="password" autocomplete="new-password" placeholder="Repita a senha">
-    <button id="savePassword">Salvar nova senha</button>
-    <div class="notice">Defina sua senha para ativar o acesso ao ReelsAI Studio.</div>
-  </section>
-
-  <section id="userBox" class="user">
-    <b id="userEmail"></b>
-    <span>Você está autenticado.</span>
-    <button id="openApp">Abrir ReelsAI Studio</button>
-    <button id="logout" class="secondary">Sair</button>
-  </section>
-
-  <div id="status" class="status"></div>
-  <div class="notice">O login usa o Netlify Identity. A senha não fica armazenada no código do aplicativo.</div>
-  <div class="links"><a href="/">Voltar ao site</a></div>
+<div class="brand">Reels<i>AI</i> Studio</div>
+<div class="tag">Área exclusiva para clientes. Entre com o e-mail e a senha cadastrados.</div>
+<section id="loginBox">
+<label for="email">E-mail</label><input id="email" type="email" autocomplete="username" placeholder="cliente@empresa.com">
+<label for="password">Senha</label><input id="password" type="password" autocomplete="current-password" placeholder="Sua senha">
+<button id="login">Entrar no aplicativo</button><button id="recover" class="secondary">Esqueci minha senha</button>
+</section>
+<section id="setPasswordBox" style="display:none">
+<label for="newPassword">Nova senha</label><input id="newPassword" type="password" autocomplete="new-password" placeholder="Mínimo 10 caracteres">
+<label for="confirmPassword">Confirmar nova senha</label><input id="confirmPassword" type="password" autocomplete="new-password" placeholder="Repita a senha">
+<button id="savePassword">Salvar nova senha</button>
+</section>
+<section id="userBox" class="user"><b id="userEmail"></b><span>Você está autenticado.</span><button id="openApp">Abrir ReelsAI Studio</button><button id="logout" class="secondary">Sair</button></section>
+<div id="status" class="status"></div>
+<div class="notice">A autenticação é feita pelo Netlify Identity. As senhas não ficam armazenadas no código.</div>
+<div class="links"><a href="/">Voltar ao site</a></div>
 </main>
 <script type="module">
-import { login, logout, getUser, getSettings, handleAuthCallback, recoverPassword, acceptInvite, updateUser } from 'https://cdn.jsdelivr.net/npm/@netlify/identity@2.0.0/+esm';
-
-const $=id=>document.getElementById(id);
-const status=(msg,type='')=>{const el=$('status');el.textContent=msg;el.className='status '+type};
-let pendingInviteToken='';
-let recoveryMode=false;
-
-function showPasswordForm(mode){
-  recoveryMode=mode==='recovery';
-  $('loginBox').style.display='none';
-  $('userBox').style.display='none';
-  $('setPasswordBox').style.display='block';
-  $('newPassword').focus();
-}
-
-async function refresh(){
-  const user=await getUser();
-  if(user){
-    $('loginBox').style.display='none';
-    $('setPasswordBox').style.display='none';
-    $('userBox').style.display='block';
-    $('userEmail').textContent=user.email||'Cliente autenticado';
-    status('Login realizado com sucesso.','ok');
-    return user;
-  }
-  if(!recoveryMode && !pendingInviteToken){
-    $('loginBox').style.display='block';
-    $('setPasswordBox').style.display='none';
-    $('userBox').style.display='none';
-  }
-  return null;
-}
-
-async function boot(){
-  try{
-    const settings=await getSettings();
-    if(settings?.signupDisabled===false){
-      // Registration remains controlled by Netlify Identity; no public signup is exposed here.
-    }
-    const callback=await handleAuthCallback();
-    if(callback?.type==='recovery'){
-      recoveryMode=true;
-      showPasswordForm('recovery');
-      status('Link de recuperação validado. Crie sua nova senha.','ok');
-      return;
-    }
-    if(callback?.type==='invite' && callback.token){
-      pendingInviteToken=callback.token;
-      showPasswordForm('invite');
-      status('Convite validado. Crie sua senha para ativar a conta.','ok');
-      return;
-    }
-    await refresh();
-  }catch(error){
-    status(error?.message||'Não foi possível conectar ao serviço de autenticação. Verifique se o Netlify Identity está habilitado.','error');
-  }
-}
-
-$('login').onclick=async()=>{
-  const email=$('email').value.trim();
-  const password=$('password').value;
-  if(!email||!password){status('Informe e-mail e senha.','error');return}
-  $('login').disabled=true;status('Entrando...');
-  try{
-    const user=await login(email,password);
-    if(!user)throw new Error('O Identity não retornou uma sessão válida.');
-    const current=await getUser();
-    if(!current)throw new Error('Login concluído, mas a sessão não foi criada no navegador. Recarregue a página e tente novamente.');
-    status(`Acesso autorizado para ${current.email}.`,'ok');
-    setTimeout(()=>{window.location.href='/';},250);
-  }catch(error){
-    const message=error?.message||'Não foi possível entrar.';
-    status(message,'error');
-  }finally{$('login').disabled=false}
-};
-
-$('recover').onclick=async()=>{
-  const email=$('email').value.trim();
-  if(!email){status('Digite seu e-mail para receber a recuperação de senha.','error');return}
-  $('recover').disabled=true;status('Enviando instruções...');
-  try{await recoverPassword(email);status('Se o e-mail existir, você receberá as instruções de recuperação. Verifique sua caixa de entrada e spam.','ok')}catch(error){status(error?.message||'Não foi possível solicitar a recuperação.','error')}finally{$('recover').disabled=false}
-};
-
-$('savePassword').onclick=async()=>{
-  const password=$('newPassword').value;
-  const confirm=$('confirmPassword').value;
-  if(password.length<10){status('A senha precisa ter pelo menos 10 caracteres.','error');return}
-  if(password!==confirm){status('As senhas não coincidem.','error');return}
-  $('savePassword').disabled=true;status('Salvando nova senha...');
-  try{
-    if(pendingInviteToken){
-      await acceptInvite(pendingInviteToken,password);
-    }else if(recoveryMode){
-      await updateUser({password});
-    }else{
-      throw new Error('Fluxo de senha inválido. Solicite uma nova recuperação.');
-    }
-    status('Senha criada com sucesso. Abrindo o ReelsAI Studio...','ok');
-    setTimeout(()=>{window.location.href='/'},500);
-  }catch(error){status(error?.message||'Não foi possível salvar a nova senha. O link pode ter expirado; solicite outra recuperação.','error')}finally{$('savePassword').disabled=false}
-};
-
-$('openApp').onclick=()=>{window.location.href='/'};
-$('logout').onclick=async()=>{await logout();window.location.href='/login'};
-$('password').addEventListener('keydown',e=>{if(e.key==='Enter')$('login').click()});
-boot();
+import { logout,getUser,handleAuthCallback,recoverPassword,acceptInvite,updateUser } from 'https://cdn.jsdelivr.net/npm/@netlify/identity@2.0.0/+esm';
+const $=id=>document.getElementById(id);const status=(m,t='')=>{const e=$('status');e.textContent=m;e.className='status '+t};let inviteToken='';let recovery=false;
+function passwordBox(mode){recovery=mode==='recovery';$('loginBox').style.display='none';$('userBox').style.display='none';$('setPasswordBox').style.display='block';$('newPassword').focus()}
+async function boot(){try{const cb=await handleAuthCallback();if(cb?.type==='recovery'){passwordBox('recovery');status('Link de recuperação validado. Crie sua nova senha.','ok');return}if(cb?.type==='invite'&&cb.token){inviteToken=cb.token;passwordBox('invite');status('Convite validado. Crie sua senha para ativar a conta.','ok');return}const u=await getUser();if(u){$('loginBox').style.display='none';$('userBox').style.display='block';$('userEmail').textContent=u.email||'Cliente autenticado';status('Sessão ativa.','ok')}}catch(e){status(e?.message||'Não foi possível iniciar a autenticação.','error')}}
+$('login').onclick=async()=>{const email=$('email').value.trim(),password=$('password').value;if(!email||!password){status('Informe e-mail e senha.','error');return}$('login').disabled=true;status('Entrando...');try{const r=await fetch('/.netlify/functions/login-user',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({email,password})});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'E-mail ou senha inválidos.');const u=await getUser();if(!u)throw new Error('O login foi aceito, mas a sessão não foi criada.');status('Login realizado com sucesso.','ok');setTimeout(()=>location.href='/',300)}catch(e){status(e?.message||'Não foi possível entrar.','error')}finally{$('login').disabled=false}};
+$('recover').onclick=async()=>{const email=$('email').value.trim();if(!email){status('Digite seu e-mail.','error');return}$('recover').disabled=true;status('Enviando recuperação...');try{await recoverPassword(email);status('Se o e-mail existir, as instruções foram enviadas.','ok')}catch(e){status(e?.message||'Não foi possível solicitar a recuperação.','error')}finally{$('recover').disabled=false}};
+$('savePassword').onclick=async()=>{const p=$('newPassword').value,c=$('confirmPassword').value;if(p.length<10){status('A senha precisa ter pelo menos 10 caracteres.','error');return}if(p!==c){status('As senhas não coincidem.','error');return}$('savePassword').disabled=true;status('Salvando senha...');try{if(inviteToken)await acceptInvite(inviteToken,p);else if(recovery)await updateUser({password:p});else throw new Error('Fluxo de senha inválido.');status('Senha criada. Abrindo o aplicativo...','ok');setTimeout(()=>location.href='/',400)}catch(e){status(e?.message||'Não foi possível salvar a senha.','error')}finally{$('savePassword').disabled=false}};
+$('openApp').onclick=()=>location.href='/';$('logout').onclick=async()=>{await logout();location.href='/login'};$('password').addEventListener('keydown',e=>{if(e.key==='Enter')$('login').click()});boot();
 </script>
 </body>
 </html>
