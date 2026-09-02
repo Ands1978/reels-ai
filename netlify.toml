@@ -16,6 +16,13 @@
   status = 200
   force = true
 
+# Route generation to the resilient endpoint that does not depend on the broken server-side session lookup.
+[[redirects]]
+  from = "/.netlify/functions/generate"
+  to = "/.netlify/functions/generate-public"
+  status = 200
+  force = true
+
 # Simple API health endpoint.
 [[redirects]]
   from = "/api/health"
