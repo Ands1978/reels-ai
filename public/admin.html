@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — ReelsAI Studio</title>
+<style>
+:root{--bg:#07070b;--panel:#11111a;--line:#2b2b36;--text:#f8f8fb;--muted:#9f9fab;--accent:#9b5cf6;--danger:#ff6878;--ok:#69dda0}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#29164a 0,#09090f 46%,#050509 100%);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;min-height:100vh}.wrap{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:28px 0 60px}.top{display:flex;justify-content:space-between;gap:20px;align-items:center;margin-bottom:22px}.brand{font-size:28px;font-weight:950;letter-spacing:-.05em}.brand i{font-style:normal;color:#aa78ff}.sub{color:var(--muted);font-size:13px;margin-top:4px}.actions{display:flex;gap:8px}.btn{border:1px solid var(--line);background:#191923;color:#fff;border-radius:10px;padding:10px 14px;font-weight:850;cursor:pointer}.btn.primary{background:linear-gradient(135deg,#9b5cf6,#7140d4);border:0}.btn.danger{color:#ff9aa5}.grid{display:grid;grid-template-columns:360px 1fr;gap:18px}.card{background:rgba(17,17,26,.96);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 22px 70px rgba(0,0,0,.25)}h2{font-size:15px;margin:0 0 16px}label{display:block;color:#bdbdc8;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin:12px 0 6px}input,select{width:100%;background:#09090e;color:#fff;border:1px solid #3b3b47;border-radius:10px;padding:12px;font:inherit;outline:none}table{width:100%;border-collapse:collapse}th,td{text-align:left;border-bottom:1px solid #262630;padding:12px 8px;font-size:12px;vertical-align:middle}th{color:#a7a7b2;font-size:10px;text-transform:uppercase;letter-spacing:.06em}.role{display:inline-flex;padding:5px 8px;border-radius:999px;background:#211b2f;color:#d6baff;font-weight:900}.muted{color:var(--muted)}.row-actions{display:flex;gap:6px;flex-wrap:wrap}.status{min-height:20px;margin-top:12px;font-size:12px;color:var(--muted)}.status.error{color:var(--danger)}.status.ok{color:var(--ok)}.hidden{display:none}.empty{padding:35px;text-align:center;color:var(--muted)}.notice{margin-top:14px;padding:11px 12px;border:1px solid #30303b;border-radius:10px;color:var(--muted);font-size:11px;line-height:1.5}@media(max-width:850px){.grid{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.actions{width:100%}.actions .btn{flex:1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div><div class="brand">Reels<i>AI</i> Studio</div><div class="sub">Painel administrativo · clientes e acessos</div></div>
+    <div class="actions"><button class="btn" id="back">Abrir editor</button><button class="btn" id="logout">Sair</button></div>
+  </header>
+
+  <main class="grid">
+    <section class="card">
+      <h2>Novo usuário</h2>
+      <form id="createForm">
+        <label>E-mail</label><input id="email" type="email" required placeholder="cliente@empresa.com">
+        <label>Nome</label><input id="name" type="text" placeholder="Nome do cliente">
+        <label>Senha temporária</label><input id="password" type="password" minlength="10" required placeholder="Mínimo 10 caracteres">
+        <label>Perfil</label><select id="role"><option value="customer">Cliente</option><option value="admin">Administrador</option></select>
+        <button class="btn primary" style="width:100%;margin-top:16px" type="submit">Criar acesso</button>
+      </form>
+      <div class="notice">A senha é criada por você no cadastro. O cliente poderá usar a recuperação de senha depois. Perfis são controlados no servidor.</div>
+      <div id="status" class="status"></div>
+    </section>
+
+    <section class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px"><h2 style="margin:0">Usuários</h2><button class="btn" id="refresh">Atualizar</button></div>
+      <div id="tableWrap"><div class="empty">Carregando usuários...</div></div>
+    </section>
+  </main>
+</div>
+<script type="module">
+import { getUser, logout, handleAuthCallback } from 'https://cdn.jsdelivr.net/npm/@netlify/identity@2.0.0/+esm';
+const $=id=>document.getElementById(id);
+const status=(msg,type='')=>{const el=$('status');el.textContent=msg;el.className='status '+type};
+const fmt=d=>d?new Date(d).toLocaleString('pt-BR'):'—';
+let me=null;
+
+async function ensureAdmin(){
+  try{await handleAuthCallback();}catch(e){status(e?.message||'Falha de autenticação.','error')}
+  me=await getUser();
+  if(!me){window.location.href='/login';return false}
+  if(!(me.roles||[]).includes('admin')){window.location.href='/';return false}
+  return true;
+}
+
+async function api(method='GET',body){
+  const res=await fetch('/.netlify/functions/admin-users',{method,headers:{'content-type':'application/json'},body:body?JSON.stringify(body):undefined});
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok)throw new Error(data.error||`Erro ${res.status}`);
+  return data;
+}
+
+async function load(){
+  $('tableWrap').innerHTML='<div class="empty">Carregando usuários...</div>';
+  try{
+    const {users}=await api();
+    if(!users.length){$('tableWrap').innerHTML='<div class="empty">Nenhum usuário cadastrado.</div>';return}
+    $('tableWrap').innerHTML=`<div style="overflow:auto"><table><thead><tr><th>Usuário</th><th>Perfil</th><th>Criado</th><th>Último acesso</th><th>Ações</th></tr></thead><tbody>${users.map(u=>`<tr><td><b>${esc(u.name||'Sem nome')}</b><br><span class="muted">${esc(u.email)}</span></td><td><span class="role">${(u.roles||[]).join(', ')||'sem perfil'}</span></td><td>${fmt(u.createdAt)}</td><td>${fmt(u.lastSignInAt)}</td><td><div class="row-actions"><button class="btn" data-action="toggle" data-id="${esc(u.id)}" data-role="${esc((u.roles||[])[0]||'customer')}">${(u.roles||[]).includes('admin')?'Tornar cliente':'Tornar admin'}</button>${u.id!==me.id?`<button class="btn danger" data-action="delete" data-id="${esc(u.id)}">Excluir</button>`:'<span class="muted">Sua conta</span>'}</div></td></tr>`).join('')}</tbody></table></div>`;
+  }catch(e){$('tableWrap').innerHTML=`<div class="empty">${esc(e.message)}</div>`}
+}
+
+function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+
+$('createForm').onsubmit=async e=>{
+  e.preventDefault();status('Criando acesso...');
+  try{
+    await api('POST',{email:$('email').value.trim(),name:$('name').value.trim(),password:$('password').value,role:$('role').value});
+    $('createForm').reset();$('role').value='customer';status('Usuário criado com sucesso.','ok');await load();
+  }catch(err){status(err.message,'error')}
+};
+
+$('tableWrap').onclick=async e=>{
+  const b=e.target.closest('button[data-action]');if(!b)return;
+  const id=b.dataset.id;
+  try{
+    if(b.dataset.action==='delete'){
+      if(!confirm('Excluir este usuário? Esta ação não pode ser desfeita.'))return;
+      await api('DELETE',{id});status('Usuário excluído.','ok');await load();
+    }else{
+      const currentRole=b.dataset.role==='admin'?'admin':'customer';
+      const next=currentRole==='admin'?'customer':'admin';
+      if(id===me.id&&next!=='admin')return;
+      await api('PATCH',{id,role:next});status('Perfil atualizado.','ok');await load();
+    }
+  }catch(err){status(err.message,'error')}
+};
+
+$('refresh').onclick=load;$('back').onclick=()=>{window.location.href='/'};$('logout').onclick=async()=>{await logout();window.location.href='/login'};
+
+if(await ensureAdmin())await load();
+</script>
+</body>
+</html>
