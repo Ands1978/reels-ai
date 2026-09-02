@@ -101,7 +101,7 @@ export default async function handler(request, context) {
   function wire(id,url,prompt,label){
     document.getElementById(id)?.addEventListener('click',async()=>{
       const ok=prompt?await copyPrompt(prompt()):false;
-      setStatus(ok?''+label+' aberto. Prompt copiado para a área de transferência.':label+' aberto.','ok');
+      setStatus(ok?label+' aberto. Prompt copiado para a área de transferência.':label+' aberto.','ok');
       openTool(url);
     });
   }
@@ -110,30 +110,33 @@ export default async function handler(request, context) {
     if(document.getElementById('reelsAiToolsPanel')) return;
     const input=document.getElementById('globalFiles');
     if(!input || !input.parentElement) return;
-    input.parentElement.insertAdjacentHTML('afterend', `
-      <div id="reelsAiToolsPanel" class="notice" style="margin-top:12px">
-        <b>🧰 CENTRAL DE FERRAMENTAS IA</b>
-        <div class="buttons" style="margin-top:10px">
-          <button id="toolMusic" class="secondary">🎵 Eleven Music</button>
-          <button id="toolVoice" class="secondary">🎙️ ElevenLabs</button>
-          <button id="toolVibes" class="secondary">✨ Vibes</button>
-          <button id="toolVibesInstall" class="secondary">⬇ Instalar Vibes</button>
-          <button id="toolLeonardo" class="secondary">🎨 Leonardo.ai</button>
-          <button id="toolNano" class="secondary">🍌 Nano Banana</button>
-          <button id="toolGemini" class="secondary">✨ Gemini</button>
-          <button id="toolCanvas" class="secondary">🖼️ Gemini Canvas</button>
-          <button id="toolStitch" class="secondary">🧩 Stitch</button>
-          <button id="toolBuild" class="secondary">🛠️ Build</button>
-          <button id="toolOpal" class="secondary">💎 Opal</button>
-          <button id="toolNotebook" class="secondary">📚 NotebookLM</button>
-          <button id="toolPomelli" class="secondary">📣 Pomelli</button>
-          <button id="toolCapcutMusic" class="secondary">🎵 CapCut Música</button>
-          <button id="toolCapcutEditor" class="secondary">🎬 CapCut Editor</button>
-        </div>
-        <div class="hint" style="margin-top:8px">As ferramentas oficiais são abertas em nova aba. Quando fizer sentido, o aplicativo copia automaticamente um prompt pronto baseado no tema do Reel.</div>
-      </div>
-      <div id="reelsAiToolsNotice" class="notice">🚀 <b>Fluxo profissional:</b> roteiro → pesquisa → imagens/vídeos → design → música/voz → timeline → exportação.</div>
-    `);
+
+    const panelHtml = [
+      '<div id="reelsAiToolsPanel" class="notice" style="margin-top:12px">',
+      '<b>🧰 CENTRAL DE FERRAMENTAS IA</b>',
+      '<div class="buttons" style="margin-top:10px">',
+      '<button id="toolMusic" class="secondary">🎵 Eleven Music</button>',
+      '<button id="toolVoice" class="secondary">🎙️ ElevenLabs</button>',
+      '<button id="toolVibes" class="secondary">✨ Vibes</button>',
+      '<button id="toolVibesInstall" class="secondary">⬇ Instalar Vibes</button>',
+      '<button id="toolLeonardo" class="secondary">🎨 Leonardo.ai</button>',
+      '<button id="toolNano" class="secondary">🍌 Nano Banana</button>',
+      '<button id="toolGemini" class="secondary">✨ Gemini</button>',
+      '<button id="toolCanvas" class="secondary">🖼️ Gemini Canvas</button>',
+      '<button id="toolStitch" class="secondary">🧩 Stitch</button>',
+      '<button id="toolBuild" class="secondary">🛠️ Build</button>',
+      '<button id="toolOpal" class="secondary">💎 Opal</button>',
+      '<button id="toolNotebook" class="secondary">📚 NotebookLM</button>',
+      '<button id="toolPomelli" class="secondary">📣 Pomelli</button>',
+      '<button id="toolCapcutMusic" class="secondary">🎵 CapCut Música</button>',
+      '<button id="toolCapcutEditor" class="secondary">🎬 CapCut Editor</button>',
+      '</div>',
+      '<div class="hint" style="margin-top:8px">As ferramentas oficiais são abertas em nova aba. Quando fizer sentido, o aplicativo copia automaticamente um prompt pronto baseado no tema do Reel.</div>',
+      '</div>',
+      '<div id="reelsAiToolsNotice" class="notice">🚀 <b>Fluxo profissional:</b> roteiro → pesquisa → imagens/vídeos → design → música/voz → timeline → exportação.</div>'
+    ].join('');
+
+    input.parentElement.insertAdjacentHTML('afterend', panelHtml);
 
     wire('toolMusic',URLS.elevenMusic,musicPrompt,'🎵 Eleven Music');
     wire('toolVoice',URLS.eleven,()=>{
@@ -163,14 +166,14 @@ export default async function handler(request, context) {
 
   function refreshLabels(){
     const global=document.getElementById('musicGlobal');
-    if(global) global.textContent='🎵 ABRIR ELEVEN MUSIC';
+    if(global && global.textContent !== '🎵 ABRIR ELEVEN MUSIC') global.textContent='🎵 ABRIR ELEVEN MUSIC';
     document.querySelectorAll('.musicbox').forEach(box=>{
       const b=box.querySelector('b');
-      if(b) b.textContent='🎵 Fundo musical · Eleven Music';
+      if(b && b.textContent !== '🎵 Fundo musical · Eleven Music') b.textContent='🎵 Fundo musical · Eleven Music';
       const hint=box.querySelector('.hint');
-      if(hint && !box.querySelector('audio')) hint.textContent='Abra o Eleven Music com um prompt pronto para criar a trilha instrumental do Reel.';
+      if(hint && !box.querySelector('audio') && hint.textContent !== 'Abra o Eleven Music com um prompt pronto para criar a trilha instrumental do Reel.') hint.textContent='Abra o Eleven Music com um prompt pronto para criar a trilha instrumental do Reel.';
       const button=box.querySelector('[data-act="music"]');
-      if(button) button.textContent='Abrir Eleven Music';
+      if(button && button.textContent !== 'Abrir Eleven Music') button.textContent='Abrir Eleven Music';
       const name=box.querySelector('.hint');
       if(name && box.querySelector('audio') && name.textContent.includes('MusicGen')) name.textContent=name.textContent.replace(/MusicGen/g,'Eleven Music');
     });
