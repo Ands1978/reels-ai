@@ -41,6 +41,13 @@
   status = 200
   force = true
 
+# Stripe subscription webhook for automatic plan entitlement.
+[[redirects]]
+  from = "/api/stripe-webhook"
+  to = "/.netlify/functions/stripe-webhook"
+  status = 200
+  force = true
+
 # Route generation to the resilient endpoint that does not depend on the broken server-side session lookup.
 [[redirects]]
   from = "/.netlify/functions/generate"
