@@ -39,6 +39,13 @@
   status = 200
   force = true
 
+# Free Pixabay image bank.
+[[redirects]]
+  from = "/banco-imagens"
+  to = "/banco-imagens.html"
+  status = 200
+  force = true
+
 # Secure server-side handoff to the Stripe Payment Link for each plan.
 [[redirects]]
   from = "/checkout"
