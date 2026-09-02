@@ -25,6 +25,7 @@ export default async function handler(request, context) {
     <button id="reelsAiColorSolid" type="button" style="flex:1;padding:8px;font-size:10px">COR SÓLIDA</button>
     <button id="reelsAiColorGradient" type="button" style="flex:1;padding:8px;font-size:10px;background:#29293a">GRADIENTE</button>
   </div>
+  <a href="/banco-imagens" target="_blank" rel="noopener" style="display:block;text-align:center;margin-top:10px;padding:10px;border-radius:10px;background:linear-gradient(135deg,#4aa3ff,#2672d9);color:#fff;text-decoration:none;font-size:11px;font-weight:950">🖼️ BANCO DE IMAGENS PIXABAY</a>
   <div id="reelsAiColorName" style="font-size:10px;color:#8f8f9a;margin-top:8px">Fundo atual: preto</div>
 </div>
 <script>
