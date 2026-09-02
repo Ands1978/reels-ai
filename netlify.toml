@@ -9,10 +9,28 @@
   path = "/*"
   function = "capcut-tools"
 
+# Customer login page.
+[[redirects]]
+  from = "/login"
+  to = "/login.html"
+  status = 200
+  force = true
+
+# Only authenticated customers/admins can call the AI generator.
+# Netlify evaluates this at the CDN edge using the Identity JWT role.
+[[redirects]]
+  from = "/.netlify/functions/generate"
+  to = "/.netlify/functions/generate"
+  status = 200
+  force = true
+  conditions = {Role = ["customer", "admin"]}
+
 [[redirects]]
   from = "/api/generate"
   to = "/.netlify/functions/generate"
   status = 200
+  force = true
+  conditions = {Role = ["customer", "admin"]}
 
 [[redirects]]
   from = "/api/health"
