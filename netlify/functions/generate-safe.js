@@ -1,11 +1,7 @@
 import OpenAI from "openai";
 import { getUser } from "@netlify/identity";
 
-const json = (body, status = 200) => Response.json(body, {
-  status,
-  headers: { "cache-control": "no-store" }
-});
-
+const json = (body, status = 200) => Response.json(body, { status, headers: { "cache-control": "no-store" } });
 const clean = value => String(value || "").replace(/\s+/g, " ").trim();
 
 function topicFrom(value) {
@@ -27,7 +23,7 @@ const unique = parts => {
   });
 };
 
-function localScripts(idea, count) {
+function localScripts(idea, count, duration) {
   const topic = topicFrom(idea);
   const angles = [
     ["O ponto central", `Em ${topic}, o primeiro ponto é separar o que realmente importa do que só parece importante.`, `Olhe para o problema por uma causa de cada vez e identifique a variável que mais muda o resultado.`, `Pegue uma situação real de ${topic} e compare duas decisões mudando apenas uma condição.`, `Teste essa condição isoladamente antes de mudar outras partes do processo.`, `Quando a variável certa fica clara, a decisão fica mais precisa.`],
@@ -41,10 +37,9 @@ function localScripts(idea, count) {
     ["Próximo passo", `O melhor próximo passo em ${topic} é aquele que produz informação nova.`, `Em vez de mudar tudo, escolha uma única ação que possa ser avaliada.`, `Faça esse teste e anote exatamente o que mudou.`, `Use o resultado para decidir o segundo passo.`, `Progresso fica mais fácil quando cada ação ensina alguma coisa.`],
     ["Outro ângulo", `Talvez ${topic} esteja sendo analisado pela pergunta errada.`, `Em vez de olhar só para o resultado, observe o processo que produz esse resultado.`, `Mapeie uma situação do início ao fim e encontre a etapa de maior impacto.`, `Mude primeiro essa etapa e compare o efeito.`, `Às vezes a solução aparece quando a pergunta muda.`]
   ];
+  const step = duration / 5;
   return Array.from({ length: Math.min(Math.max(Number(count) || 1, 1), 10) }, (_, i) => {
     const a = angles[i % angles.length];
-    const duration = Number(arguments.duration) || 30;
-    const step = duration / 5;
     return {
       titulo: `${a[0]}: ${topic}`,
       scenes: a.slice(1).map((text, n) => ({ start: Number((n * step).toFixed(1)), end: Number(((n + 1) * step).toFixed(1)), text }))
@@ -62,10 +57,7 @@ function normalize(reels, duration) {
     const raw = Array.isArray(item?.scenes) ? item.scenes : [item?.hook, item?.body, item?.example, item?.action, item?.close];
     const scenes = unique(raw).slice(0, 5);
     while (scenes.length < 5) scenes.push(`Cena ${scenes.length + 1}: desenvolva um ponto específico do tema.`);
-    return {
-      titulo: clean(item?.titulo) || `Reel ${i + 1}`,
-      scenes: scenes.map((text, n) => ({ start: Number((n * step).toFixed(1)), end: Number(((n + 1) * step).toFixed(1)), text }))
-    };
+    return { titulo: clean(item?.titulo) || `Reel ${i + 1}`, scenes: scenes.map((text, n) => ({ start: Number((n * step).toFixed(1)), end: Number(((n + 1) * step).toFixed(1)), text })) };
   });
 }
 
@@ -87,7 +79,9 @@ async function tryOpenAI(idea, duration, style, count) {
       } } }, required: ["reels"]
     } } }
   });
-  return normalize(response.output_text ? JSON.parse(response.output_text).reels : [], duration);
+  let parsed;
+  try { parsed = JSON.parse(response.output_text || "{}"); } catch { throw new Error("A IA retornou JSON inválido"); }
+  return normalize(parsed.reels, duration);
 }
 
 export default async request => {
@@ -109,7 +103,7 @@ export default async request => {
       console.error("AI generation failed; using resilient local fallback", error);
     }
 
-    return json({ items: localScripts(idea, count), mode: "local-fallback", warning: "O provedor de IA não respondeu; o editor continuou com roteiros locais para não interromper o fluxo." });
+    return json({ items: localScripts(idea, count, duration), mode: "local-fallback", warning: "O provedor de IA não respondeu; o editor continuou com roteiros locais para não interromper o fluxo." });
   } catch (error) {
     console.error("generate-safe error", error);
     return json({ error: error?.message || "Não foi possível gerar os roteiros." }, 500);
