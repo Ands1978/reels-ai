@@ -16,8 +16,21 @@
   status = 200
   force = true
 
+# The editor is available only to authenticated customer/admin roles.
+[[redirects]]
+  from = "/"
+  to = "/"
+  status = 200
+  force = true
+  conditions = {Role = ["customer", "admin"]}
+
+[[redirects]]
+  from = "/"
+  to = "/login"
+  status = 302
+  force = true
+
 # Only authenticated customers/admins can call the AI generator.
-# Netlify evaluates this at the CDN edge using the Identity JWT role.
 [[redirects]]
   from = "/.netlify/functions/generate"
   to = "/.netlify/functions/generate"
