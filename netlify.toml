@@ -16,63 +16,7 @@
   status = 200
   force = true
 
-# Admin area: allow only the admin role, with a login fallback.
-[[redirects]]
-  from = "/admin/*"
-  to = "/admin/:splat"
-  status = 200
-  force = true
-  conditions = {Role = ["admin"]}
-
-[[redirects]]
-  from = "/admin/*"
-  to = "/login"
-  status = 401
-  force = true
-
-# Protect direct access to the admin HTML file as well.
-[[redirects]]
-  from = "/admin.html"
-  to = "/admin.html"
-  status = 200
-  force = true
-  conditions = {Role = ["admin"]}
-
-[[redirects]]
-  from = "/admin.html"
-  to = "/login"
-  status = 401
-  force = true
-
-# Editor: allow customer and admin roles, with a login fallback.
-[[redirects]]
-  from = "/"
-  to = "/index.html"
-  status = 200
-  force = true
-  conditions = {Role = ["customer", "admin"]}
-
-[[redirects]]
-  from = "/"
-  to = "/login"
-  status = 401
-  force = true
-
-# Protect direct access to the editor HTML file too.
-[[redirects]]
-  from = "/index.html"
-  to = "/index.html"
-  status = 200
-  force = true
-  conditions = {Role = ["customer", "admin"]}
-
-[[redirects]]
-  from = "/index.html"
-  to = "/login"
-  status = 401
-  force = true
-
-# Customer-management and AI functions enforce authorization server-side.
+# Simple API health endpoint.
 [[redirects]]
   from = "/api/health"
   to = "/.netlify/functions/health"
