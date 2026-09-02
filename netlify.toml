@@ -10,6 +10,11 @@
   path = "/"
   function = "auth-gate"
 
+# Show the customer's current subscription and management action in the app.
+[[edge_functions]]
+  path = "/"
+  function = "subscription-panel"
+
 # Keep the existing editor/tooling middleware unchanged for the rest of the site.
 [[edge_functions]]
   path = "/*"
@@ -45,6 +50,13 @@
 [[redirects]]
   from = "/api/stripe-webhook"
   to = "/.netlify/functions/stripe-webhook"
+  status = 200
+  force = true
+
+# Customer-only Stripe Billing Portal.
+[[redirects]]
+  from = "/api/customer-portal"
+  to = "/.netlify/functions/customer-portal"
   status = 200
   force = true
 
