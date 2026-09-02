@@ -10,6 +10,9 @@ const safeUser = user => ({
   email: user.email || "",
   name: user.name || user.userMetadata?.full_name || "",
   roles: user.roles || user.appMetadata?.roles || [],
+  plan: user.appMetadata?.plan || "free",
+  stripeCustomerId: user.appMetadata?.stripe_customer_id || null,
+  stripeSubscriptionId: user.appMetadata?.stripe_subscription_id || null,
   confirmedAt: user.confirmedAt || null,
   createdAt: user.createdAt || null,
   lastSignInAt: user.lastSignInAt || null,
@@ -51,7 +54,7 @@ export default async request => {
         email,
         password,
         data: {
-          app_metadata: { roles: [role] },
+          app_metadata: { plan: "free", roles: [role] },
           user_metadata: name ? { full_name: name } : {}
         }
       });
@@ -75,7 +78,18 @@ export default async request => {
         if (id === current.id && body.role !== "admin") {
           return response({ error: "O administrador atual não pode remover a própria role admin." }, 400);
         }
-        attributes.app_metadata = { roles: [body.role] };
+        attributes.app_metadata = {
+          plan: body.plan === "studio" ? "studio" : body.plan === "pro" ? "pro" : "free",
+          roles: [body.role]
+        };
+      } else if (body.plan === "pro" || body.plan === "studio" || body.plan === "free") {
+        const existing = (await admin.listUsers({ perPage: 200 })).find(user => user.id === id);
+        if (!existing) return response({ error: "Usuário não encontrado." }, 404);
+        attributes.app_metadata = {
+          ...(existing.appMetadata || {}),
+          plan: body.plan,
+          roles: body.plan === "studio" ? ["customer", "studio"] : body.plan === "pro" ? ["customer", "pro"] : ["customer"]
+        };
       }
       if (!Object.keys(attributes).length) return response({ error: "Nenhuma alteração informada." }, 400);
 
