@@ -9,42 +9,45 @@
   path = "/*"
   function = "capcut-tools"
 
-# Customer login page.
+# Public customer login page.
 [[redirects]]
   from = "/login"
   to = "/login.html"
   status = 200
   force = true
 
-# Administrator panel: Netlify Identity admin role only.
-# Role-gated rules intentionally omit `to`, per Netlify's RBAC syntax.
+# Admin area: allow only the admin role, with a login fallback.
 [[redirects]]
-  from = "/admin"
+  from = "/admin/*"
+  to = "/admin/:splat"
   status = 200
   force = true
   conditions = {Role = ["admin"]}
 
 [[redirects]]
-  from = "/admin"
+  from = "/admin/*"
   to = "/login"
-  status = 302
+  status = 401
   force = true
+
+# Protect direct access to the admin HTML file as well.
+[[redirects]]
+  from = "/admin.html"
+  to = "/admin.html"
+  status = 200
+  force = true
+  conditions = {Role = ["admin"]}
 
 [[redirects]]
   from = "/admin.html"
-  status = 200
-  force = true
-  conditions = {Role = ["admin"]}
-
-[[redirects]]
-  from = "/admin.html"
   to = "/login"
-  status = 302
+  status = 401
   force = true
 
-# The editor is available only to authenticated customer/admin roles.
+# Editor: allow customer and admin roles, with a login fallback.
 [[redirects]]
   from = "/"
+  to = "/index.html"
   status = 200
   force = true
   conditions = {Role = ["customer", "admin"]}
@@ -52,12 +55,13 @@
 [[redirects]]
   from = "/"
   to = "/login"
-  status = 302
+  status = 401
   force = true
 
-# Also protect direct access to the static editor file.
+# Protect direct access to the editor HTML file too.
 [[redirects]]
   from = "/index.html"
+  to = "/index.html"
   status = 200
   force = true
   conditions = {Role = ["customer", "admin"]}
@@ -65,29 +69,10 @@
 [[redirects]]
   from = "/index.html"
   to = "/login"
-  status = 302
+  status = 401
   force = true
 
-# Customer-management function has its own server-side admin check.
-[[redirects]]
-  from = "/.netlify/functions/admin-users"
-  status = 200
-  force = true
-  conditions = {Role = ["admin"]}
-
-# AI generation function has its own server-side authentication check.
-[[redirects]]
-  from = "/.netlify/functions/generate"
-  status = 200
-  force = true
-  conditions = {Role = ["customer", "admin"]}
-
-[[redirects]]
-  from = "/api/generate"
-  status = 200
-  force = true
-  conditions = {Role = ["customer", "admin"]}
-
+# Customer-management and AI functions enforce authorization server-side.
 [[redirects]]
   from = "/api/health"
   to = "/.netlify/functions/health"
