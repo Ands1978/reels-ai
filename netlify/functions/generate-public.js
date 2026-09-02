@@ -1,5 +1,4 @@
 import OpenAI from "openai";
-import { getUser } from "@netlify/identity";
 
 const json = (body, status = 200) => Response.json(body, { status, headers: { "cache-control": "no-store" } });
 const clean = v => String(v || "").replace(/\s+/g, " ").trim();
@@ -49,17 +48,13 @@ async function ai(idea, duration, style, count) {
 export default async request => {
   try {
     if (request.method !== "POST") return json({ error: "Método não permitido." }, 405);
-
-    const user = await getUser();
-    if (!user) return json({ error: "Sessão expirada. Entre novamente para gerar seus Reels." }, 401);
-
     const body = await request.json().catch(() => ({}));
     const idea = clean(body.idea), duration = Number(body.duration) || 30, style = clean(body.style) || "Viral / rápido", count = Math.min(Math.max(Number(body.count) || 1, 1), 10);
     if (!idea) return json({ error: "Digite um tema primeiro." }, 400);
     try {
       const items = await ai(idea, duration, style, count);
-      if (items.length) return json({ items, mode: "openai", user: user.email || null });
+      if (items.length) return json({ items, mode: "openai" });
     } catch (e) { console.error("AI failed, using local fallback", e); }
-    return json({ items: localScripts(idea, duration, count), mode: "local-fallback", warning: "A IA não respondeu; o ReelsAI gerou os roteiros localmente para não interromper o trabalho.", user: user.email || null });
+    return json({ items: localScripts(idea, duration, count), mode: "local-fallback", warning: "A IA não respondeu; o ReelsAI gerou os roteiros localmente para não interromper o trabalho." });
   } catch (e) { console.error("generate-public", e); return json({ error: e?.message || "Não foi possível gerar." }, 500); }
 };
