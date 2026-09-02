@@ -16,6 +16,20 @@
   status = 200
   force = true
 
+# Administrator panel: only users with the admin role can reach it.
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
+  force = true
+  conditions = {Role = ["admin"]}
+
+[[redirects]]
+  from = "/admin"
+  to = "/login"
+  status = 302
+  force = true
+
 # The editor is available only to authenticated customer/admin roles.
 [[redirects]]
   from = "/"
@@ -26,6 +40,20 @@
 
 [[redirects]]
   from = "/"
+  to = "/login"
+  status = 302
+  force = true
+
+# Only admins can call the customer-management function.
+[[redirects]]
+  from = "/.netlify/functions/admin-users"
+  to = "/.netlify/functions/admin-users"
+  status = 200
+  force = true
+  conditions = {Role = ["admin"]}
+
+[[redirects]]
+  from = "/.netlify/functions/admin-users"
   to = "/login"
   status = 302
   force = true
