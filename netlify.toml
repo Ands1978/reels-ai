@@ -5,6 +5,12 @@
 [functions]
   node_bundler = "esbuild"
 
+# Protect the application root without touching the generation function.
+[[edge_functions]]
+  path = "/"
+  function = "auth-gate"
+
+# Keep the existing editor/tooling middleware unchanged for the rest of the site.
 [[edge_functions]]
   path = "/*"
   function = "capcut-tools"
