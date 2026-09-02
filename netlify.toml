@@ -15,6 +15,11 @@
   path = "/*"
   function = "capcut-tools"
 
+# Add a working local MP3 music control without changing generation.
+[[edge_functions]]
+  path = "/*"
+  function = "mp3-music"
+
 # Public customer login page.
 [[redirects]]
   from = "/login"
@@ -34,3 +39,4 @@
   from = "/api/health"
   to = "/.netlify/functions/health"
   status = 200
+  
