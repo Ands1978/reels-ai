@@ -16,16 +16,28 @@
   status = 200
   force = true
 
-# Administrator panel: only users with the admin role can reach it.
+# Administrator panel: Netlify Identity admin role only.
+# Role-gated rules intentionally omit `to`, per Netlify's RBAC syntax.
 [[redirects]]
   from = "/admin"
-  to = "/admin.html"
   status = 200
   force = true
   conditions = {Role = ["admin"]}
 
 [[redirects]]
   from = "/admin"
+  to = "/login"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/admin.html"
+  status = 200
+  force = true
+  conditions = {Role = ["admin"]}
+
+[[redirects]]
+  from = "/admin.html"
   to = "/login"
   status = 302
   force = true
@@ -33,7 +45,6 @@
 # The editor is available only to authenticated customer/admin roles.
 [[redirects]]
   from = "/"
-  to = "/"
   status = 200
   force = true
   conditions = {Role = ["customer", "admin"]}
@@ -44,31 +55,35 @@
   status = 302
   force = true
 
-# Only admins can call the customer-management function.
+# Also protect direct access to the static editor file.
 [[redirects]]
-  from = "/.netlify/functions/admin-users"
-  to = "/.netlify/functions/admin-users"
+  from = "/index.html"
   status = 200
   force = true
-  conditions = {Role = ["admin"]}
+  conditions = {Role = ["customer", "admin"]}
 
 [[redirects]]
-  from = "/.netlify/functions/admin-users"
+  from = "/index.html"
   to = "/login"
   status = 302
   force = true
 
-# Only authenticated customers/admins can call the AI generator.
+# Customer-management function has its own server-side admin check.
+[[redirects]]
+  from = "/.netlify/functions/admin-users"
+  status = 200
+  force = true
+  conditions = {Role = ["admin"]}
+
+# AI generation function has its own server-side authentication check.
 [[redirects]]
   from = "/.netlify/functions/generate"
-  to = "/.netlify/functions/generate"
   status = 200
   force = true
   conditions = {Role = ["customer", "admin"]}
 
 [[redirects]]
   from = "/api/generate"
-  to = "/.netlify/functions/generate"
   status = 200
   force = true
   conditions = {Role = ["customer", "admin"]}
