@@ -12,11 +12,11 @@
 <body>
 <main class="card">
   <div class="brand">Reels<i>AI</i> Studio</div>
-  <div class="tag">Área exclusiva para clientes. Use o e-mail que recebeu no convite de acesso.</div>
+  <div class="tag">Área exclusiva para clientes. Use o e-mail e a senha cadastrados no acesso.</div>
 
   <section id="loginBox">
     <label for="email">E-mail</label>
-    <input id="email" type="email" autocomplete="email" placeholder="cliente@empresa.com">
+    <input id="email" type="email" autocomplete="username" placeholder="cliente@empresa.com">
     <label for="password">Senha</label>
     <input id="password" type="password" autocomplete="current-password" placeholder="Sua senha">
     <button id="login">Entrar no aplicativo</button>
@@ -29,22 +29,22 @@
     <label for="confirmPassword">Confirmar nova senha</label>
     <input id="confirmPassword" type="password" autocomplete="new-password" placeholder="Repita a senha">
     <button id="savePassword">Salvar nova senha</button>
-    <div class="notice">A recuperação foi validada. Defina agora sua nova senha para entrar no ReelsAI Studio.</div>
+    <div class="notice">Defina sua senha para ativar o acesso ao ReelsAI Studio.</div>
   </section>
 
   <section id="userBox" class="user">
     <b id="userEmail"></b>
-    <span>Você está autenticado. O acesso ao gerador é liberado pela sua conta.</span>
+    <span>Você está autenticado.</span>
     <button id="openApp">Abrir ReelsAI Studio</button>
     <button id="logout" class="secondary">Sair</button>
   </section>
 
   <div id="status" class="status"></div>
-  <div class="notice">O acesso é controlado pelo Netlify Identity e pelos perfis de cliente. Suas credenciais não ficam armazenadas no código do aplicativo.</div>
+  <div class="notice">O login usa o Netlify Identity. A senha não fica armazenada no código do aplicativo.</div>
   <div class="links"><a href="/">Voltar ao site</a></div>
 </main>
 <script type="module">
-import { login, logout, getUser, handleAuthCallback, recoverPassword, acceptInvite, updateUser } from 'https://cdn.jsdelivr.net/npm/@netlify/identity@2.0.0/+esm';
+import { login, logout, getUser, hydrateSession, handleAuthCallback, recoverPassword, acceptInvite, updateUser } from 'https://cdn.jsdelivr.net/npm/@netlify/identity@2.0.0/+esm';
 
 const $=id=>document.getElementById(id);
 const status=(msg,type='')=>{const el=$('status');el.textContent=msg;el.className='status '+type};
@@ -60,13 +60,14 @@ function showPasswordForm(mode){
 }
 
 async function refresh(){
+  try{await hydrateSession();}catch(e){}
   const user=await getUser();
   if(user){
     $('loginBox').style.display='none';
     $('setPasswordBox').style.display='none';
     $('userBox').style.display='block';
     $('userEmail').textContent=user.email||'Cliente autenticado';
-    status('Acesso autorizado.','ok');
+    status('Login realizado com sucesso.','ok');
   }else if(!recoveryMode && !pendingInviteToken){
     $('loginBox').style.display='block';
     $('setPasswordBox').style.display='none';
@@ -74,21 +75,25 @@ async function refresh(){
   }
 }
 
-try{
-  const callback=await handleAuthCallback();
-  if(callback?.type==='recovery'){
-    recoveryMode=true;
-    showPasswordForm('recovery');
-    status('Link de recuperação validado. Crie sua nova senha.','ok');
-  }else if(callback?.type==='invite' && callback.token){
-    pendingInviteToken=callback.token;
-    showPasswordForm('invite');
-    status('Convite validado. Crie sua senha para ativar a conta.','ok');
-  }else{
+async function boot(){
+  try{
+    const callback=await handleAuthCallback();
+    if(callback?.type==='recovery'){
+      recoveryMode=true;
+      showPasswordForm('recovery');
+      status('Link de recuperação validado. Crie sua nova senha.','ok');
+      return;
+    }
+    if(callback?.type==='invite' && callback.token){
+      pendingInviteToken=callback.token;
+      showPasswordForm('invite');
+      status('Convite validado. Crie sua senha para ativar a conta.','ok');
+      return;
+    }
     await refresh();
+  }catch(error){
+    status(error?.message||'Não foi possível concluir o acesso.','error');
   }
-}catch(error){
-  status(error?.message||'Não foi possível concluir o acesso.','error');
 }
 
 $('login').onclick=async()=>{
@@ -96,14 +101,23 @@ $('login').onclick=async()=>{
   const password=$('password').value;
   if(!email||!password){status('Informe e-mail e senha.','error');return}
   $('login').disabled=true;status('Entrando...');
-  try{await login(email,password);window.location.href='/';}catch(error){status(error?.message||'E-mail ou senha inválidos.','error')}finally{$('login').disabled=false}
+  try{
+    await login(email,password);
+    await refresh();
+    window.location.href='/';
+  }catch(error){
+    status(error?.message||'E-mail ou senha inválidos.','error');
+  }finally{$('login').disabled=false}
 };
 
 $('recover').onclick=async()=>{
   const email=$('email').value.trim();
   if(!email){status('Digite seu e-mail para receber a recuperação de senha.','error');return}
   $('recover').disabled=true;status('Enviando instruções...');
-  try{await recoverPassword(email);status('Se o e-mail existir, você receberá as instruções de recuperação. Verifique sua caixa de entrada e spam.','ok')}catch(error){status(error?.message||'Não foi possível solicitar a recuperação.','error')}finally{$('recover').disabled=false}
+  try{
+    await recoverPassword(email);
+    status('Se o e-mail existir, você receberá as instruções de recuperação. Verifique sua caixa de entrada e spam.','ok');
+  }catch(error){status(error?.message||'Não foi possível solicitar a recuperação.','error')}finally{$('recover').disabled=false}
 };
 
 $('savePassword').onclick=async()=>{
@@ -128,7 +142,9 @@ $('savePassword').onclick=async()=>{
 };
 
 $('openApp').onclick=()=>{window.location.href='/'};
-$('logout').onclick=async()=>{await logout();window.location.reload()};
+$('logout').onclick=async()=>{await logout();window.location.href='/login'};
+$('password').addEventListener('keydown',e=>{if(e.key==='Enter')$('login').click()});
+boot();
 </script>
 </body>
 </html>
