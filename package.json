@@ -4,6 +4,7 @@
   "version": "1.1.0",
   "scripts": {"dev": "netlify dev", "build": "echo ReelsAI static build ready"},
   "dependencies": {
+    "@netlify/identity": "^2.0.0",
     "openai": "^5.20.0"
   }
 }
