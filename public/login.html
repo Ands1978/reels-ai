@@ -44,7 +44,7 @@
   <div class="links"><a href="/">Voltar ao site</a></div>
 </main>
 <script type="module">
-import { login, logout, getUser, hydrateSession, handleAuthCallback, recoverPassword, acceptInvite, updateUser } from 'https://cdn.jsdelivr.net/npm/@netlify/identity@2.0.0/+esm';
+import { login, logout, getUser, getSettings, handleAuthCallback, recoverPassword, acceptInvite, updateUser } from 'https://cdn.jsdelivr.net/npm/@netlify/identity@2.0.0/+esm';
 
 const $=id=>document.getElementById(id);
 const status=(msg,type='')=>{const el=$('status');el.textContent=msg;el.className='status '+type};
@@ -60,7 +60,6 @@ function showPasswordForm(mode){
 }
 
 async function refresh(){
-  try{await hydrateSession();}catch(e){}
   const user=await getUser();
   if(user){
     $('loginBox').style.display='none';
@@ -68,15 +67,22 @@ async function refresh(){
     $('userBox').style.display='block';
     $('userEmail').textContent=user.email||'Cliente autenticado';
     status('Login realizado com sucesso.','ok');
-  }else if(!recoveryMode && !pendingInviteToken){
+    return user;
+  }
+  if(!recoveryMode && !pendingInviteToken){
     $('loginBox').style.display='block';
     $('setPasswordBox').style.display='none';
     $('userBox').style.display='none';
   }
+  return null;
 }
 
 async function boot(){
   try{
+    const settings=await getSettings();
+    if(settings?.signupDisabled===false){
+      // Registration remains controlled by Netlify Identity; no public signup is exposed here.
+    }
     const callback=await handleAuthCallback();
     if(callback?.type==='recovery'){
       recoveryMode=true;
@@ -92,7 +98,7 @@ async function boot(){
     }
     await refresh();
   }catch(error){
-    status(error?.message||'Não foi possível concluir o acesso.','error');
+    status(error?.message||'Não foi possível conectar ao serviço de autenticação. Verifique se o Netlify Identity está habilitado.','error');
   }
 }
 
@@ -102,11 +108,15 @@ $('login').onclick=async()=>{
   if(!email||!password){status('Informe e-mail e senha.','error');return}
   $('login').disabled=true;status('Entrando...');
   try{
-    await login(email,password);
-    await refresh();
-    window.location.href='/';
+    const user=await login(email,password);
+    if(!user)throw new Error('O Identity não retornou uma sessão válida.');
+    const current=await getUser();
+    if(!current)throw new Error('Login concluído, mas a sessão não foi criada no navegador. Recarregue a página e tente novamente.');
+    status(`Acesso autorizado para ${current.email}.`,'ok');
+    setTimeout(()=>{window.location.href='/';},250);
   }catch(error){
-    status(error?.message||'E-mail ou senha inválidos.','error');
+    const message=error?.message||'Não foi possível entrar.';
+    status(message,'error');
   }finally{$('login').disabled=false}
 };
 
@@ -114,10 +124,7 @@ $('recover').onclick=async()=>{
   const email=$('email').value.trim();
   if(!email){status('Digite seu e-mail para receber a recuperação de senha.','error');return}
   $('recover').disabled=true;status('Enviando instruções...');
-  try{
-    await recoverPassword(email);
-    status('Se o e-mail existir, você receberá as instruções de recuperação. Verifique sua caixa de entrada e spam.','ok');
-  }catch(error){status(error?.message||'Não foi possível solicitar a recuperação.','error')}finally{$('recover').disabled=false}
+  try{await recoverPassword(email);status('Se o e-mail existir, você receberá as instruções de recuperação. Verifique sua caixa de entrada e spam.','ok')}catch(error){status(error?.message||'Não foi possível solicitar a recuperação.','error')}finally{$('recover').disabled=false}
 };
 
 $('savePassword').onclick=async()=>{
@@ -136,9 +143,7 @@ $('savePassword').onclick=async()=>{
     }
     status('Senha criada com sucesso. Abrindo o ReelsAI Studio...','ok');
     setTimeout(()=>{window.location.href='/'},500);
-  }catch(error){
-    status(error?.message||'Não foi possível salvar a nova senha. O link pode ter expirado; solicite outra recuperação.','error');
-  }finally{$('savePassword').disabled=false}
+  }catch(error){status(error?.message||'Não foi possível salvar a nova senha. O link pode ter expirado; solicite outra recuperação.','error')}finally{$('savePassword').disabled=false}
 };
 
 $('openApp').onclick=()=>{window.location.href='/'};
