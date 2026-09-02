@@ -1,9 +1,8 @@
 import { admin, getUser } from "@netlify/identity";
 
-const json = (body, status = 200) => ({
-  statusCode: status,
-  headers: { "content-type": "application/json", "cache-control": "no-store" },
-  body: JSON.stringify(body)
+const response = (body, status = 200) => Response.json(body, {
+  status,
+  headers: { "cache-control": "no-store" }
 });
 
 const safeUser = user => ({
@@ -17,36 +16,36 @@ const safeUser = user => ({
   invitedAt: user.invitedAt || null
 });
 
-const parseBody = async event => {
+const parseBody = async request => {
   try {
-    return JSON.parse(event.body || "{}");
+    return await request.json();
   } catch {
     return null;
   }
 };
 
-export default async event => {
+export default async request => {
   try {
     const current = await getUser();
-    if (!current) return json({ error: "Não autenticado." }, 401);
+    if (!current) return response({ error: "Não autenticado." }, 401);
     if (!(current.roles || []).includes("admin")) {
-      return json({ error: "Acesso restrito ao administrador." }, 403);
+      return response({ error: "Acesso restrito ao administrador." }, 403);
     }
 
-    if (event.httpMethod === "GET") {
+    if (request.method === "GET") {
       const users = await admin.listUsers({ perPage: 200 });
-      return json({ users: users.map(safeUser) });
+      return response({ users: users.map(safeUser) });
     }
 
-    if (event.httpMethod === "POST") {
-      const body = await parseBody(event);
+    if (request.method === "POST") {
+      const body = await parseBody(request);
       const email = String(body?.email || "").trim().toLowerCase();
       const password = String(body?.password || "");
       const role = body?.role === "admin" ? "admin" : "customer";
       const name = String(body?.name || "").trim();
 
-      if (!email || !email.includes("@")) return json({ error: "E-mail inválido." }, 400);
-      if (password.length < 10) return json({ error: "A senha temporária precisa ter pelo menos 10 caracteres." }, 400);
+      if (!email || !email.includes("@")) return response({ error: "E-mail inválido." }, 400);
+      if (password.length < 10) return response({ error: "A senha temporária precisa ter pelo menos 10 caracteres." }, 400);
 
       const user = await admin.createUser({
         email,
@@ -57,42 +56,42 @@ export default async event => {
         }
       });
 
-      return json({ user: safeUser(user) }, 201);
+      return response({ user: safeUser(user) }, 201);
     }
 
-    const body = await parseBody(event);
+    const body = await parseBody(request);
     const id = String(body?.id || "").trim();
-    if (!id) return json({ error: "Usuário não informado." }, 400);
+    if (!id) return response({ error: "Usuário não informado." }, 400);
 
-    if (event.httpMethod === "PATCH") {
+    if (request.method === "PATCH") {
       const attributes = {};
       if (body.email) attributes.email = String(body.email).trim().toLowerCase();
       if (body.password) {
         const password = String(body.password);
-        if (password.length < 10) return json({ error: "A senha precisa ter pelo menos 10 caracteres." }, 400);
+        if (password.length < 10) return response({ error: "A senha precisa ter pelo menos 10 caracteres." }, 400);
         attributes.password = password;
       }
       if (body.role === "admin" || body.role === "customer") {
         if (id === current.id && body.role !== "admin") {
-          return json({ error: "O administrador atual não pode remover a própria role admin." }, 400);
+          return response({ error: "O administrador atual não pode remover a própria role admin." }, 400);
         }
         attributes.app_metadata = { roles: [body.role] };
       }
-      if (!Object.keys(attributes).length) return json({ error: "Nenhuma alteração informada." }, 400);
+      if (!Object.keys(attributes).length) return response({ error: "Nenhuma alteração informada." }, 400);
 
       const user = await admin.updateUser(id, attributes);
-      return json({ user: safeUser(user) });
+      return response({ user: safeUser(user) });
     }
 
-    if (event.httpMethod === "DELETE") {
-      if (id === current.id) return json({ error: "Você não pode excluir a própria conta admin." }, 400);
+    if (request.method === "DELETE") {
+      if (id === current.id) return response({ error: "Você não pode excluir a própria conta admin." }, 400);
       await admin.deleteUser(id);
-      return json({ ok: true });
+      return response({ ok: true });
     }
 
-    return json({ error: "Método não suportado." }, 405);
+    return response({ error: "Método não suportado." }, 405);
   } catch (error) {
     console.error("admin-users error", error);
-    return json({ error: error?.message || "Falha ao administrar usuários." }, 500);
+    return response({ error: error?.message || "Falha ao administrar usuários." }, 500);
   }
 };
