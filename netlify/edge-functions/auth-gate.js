@@ -28,15 +28,17 @@ export default async function handler(request, context) {
     document.head.appendChild(style);
     const root = document.createElement('div');
     root.id = 'reelsAiColorPanel';
-    root.innerHTML = `
-      <div id="reelsAiColorBox">
-        <div class="raiColorTitle">🎨 CORES DO FUNDO</div>
-        <div class="raiColorModes"><button class="raiColorMode active" data-mode="solid">COR SÓLIDA</button><button class="raiColorMode" data-mode="gradient">GRADIENTE</button></div>
-        <div id="raiColorGrid" class="raiColorGrid"></div>
-        <button id="raiColorReset" class="raiColorReset">↺ Voltar ao fundo preto</button>
-      </div>
-      <button id="reelsAiColorButton">🎨 Cores</button>
-    `;
+    root.innerHTML = [
+      "",
+      "      <div id=\"reelsAiColorBox\">",
+      "        <div class=\"raiColorTitle\">🎨 CORES DO FUNDO</div>",
+      "        <div class=\"raiColorModes\"><button class=\"raiColorMode active\" data-mode=\"solid\">COR SÓLIDA</button><button class=\"raiColorMode\" data-mode=\"gradient\">GRADIENTE</button></div>",
+      "        <div id=\"raiColorGrid\" class=\"raiColorGrid\"></div>",
+      "        <button id=\"raiColorReset\" class=\"raiColorReset\">↺ Voltar ao fundo preto</button>",
+      "      </div>",
+      "      <button id=\"reelsAiColorButton\">🎨 Cores</button>",
+      "    "
+    ].join("\n");
     document.body.appendChild(root);
     const box = root.querySelector('#reelsAiColorBox');
     const grid = root.querySelector('#raiColorGrid');
