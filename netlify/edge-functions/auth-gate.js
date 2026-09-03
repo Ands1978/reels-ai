@@ -24,14 +24,7 @@ export default async function handler(request, context) {
     if (window.__reelsAiColorPanelBooted) return;
     window.__reelsAiColorPanelBooted = true;
     const style = document.createElement('style');
-    style.textContent = `
-      #reelsAiColorPanel{position:fixed;right:14px;bottom:66px;z-index:99998;font-family:Inter,system-ui,sans-serif}
-      #reelsAiColorBox{display:none;width:min(300px,calc(100vw - 28px));background:rgba(13,13,20,.98);border:1px solid #4a3a69;border-radius:16px;padding:12px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
-      #reelsAiColorBox.open{display:block}
-      #reelsAiColorButton{border:1px solid #4a3a69;background:rgba(20,16,31,.96);color:#fff;border-radius:999px;padding:10px 13px;font-weight:900;font-size:11px;box-shadow:0 10px 30px rgba(0,0,0,.35);cursor:pointer}
-      .raiColorTitle{font-size:10px;font-weight:950;color:#fff;margin-bottom:9px}.raiColorGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.raiColorSwatch{height:34px;border-radius:8px;border:1px solid #555;cursor:pointer}.raiColorSwatch.active{outline:2px solid #fff;outline-offset:1px}.raiColorModes{display:flex;gap:6px;margin-bottom:9px}.raiColorMode{flex:1;padding:8px;background:#29293a;color:#fff;border:0;border-radius:9px;font-size:10px;font-weight:900;cursor:pointer}.raiColorMode.active{background:#7c3aed}.raiColorReset{width:100%;margin-top:9px;padding:8px;background:#262631;color:#fff;border:0;border-radius:9px;font-size:10px;font-weight:900;cursor:pointer}
-      @media(max-width:720px){#reelsAiColorPanel{right:8px;bottom:58px}}
-    `;
+    style.textContent = "\n      #reelsAiColorPanel{position:fixed;right:14px;bottom:66px;z-index:99998;font-family:Inter,system-ui,sans-serif}\n      #reelsAiColorBox{display:none;width:min(300px,calc(100vw - 28px));background:rgba(13,13,20,.98);border:1px solid #4a3a69;border-radius:16px;padding:12px;box-shadow:0 20px 60px rgba(0,0,0,.5)}\n      #reelsAiColorBox.open{display:block}\n      #reelsAiColorButton{border:1px solid #4a3a69;background:rgba(20,16,31,.96);color:#fff;border-radius:999px;padding:10px 13px;font-weight:900;font-size:11px;box-shadow:0 10px 30px rgba(0,0,0,.35);cursor:pointer}\n      .raiColorTitle{font-size:10px;font-weight:950;color:#fff;margin-bottom:9px}.raiColorGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.raiColorSwatch{height:34px;border-radius:8px;border:1px solid #555;cursor:pointer}.raiColorSwatch.active{outline:2px solid #fff;outline-offset:1px}.raiColorModes{display:flex;gap:6px;margin-bottom:9px}.raiColorMode{flex:1;padding:8px;background:#29293a;color:#fff;border:0;border-radius:9px;font-size:10px;font-weight:900;cursor:pointer}.raiColorMode.active{background:#7c3aed}.raiColorReset{width:100%;margin-top:9px;padding:8px;background:#262631;color:#fff;border:0;border-radius:9px;font-size:10px;font-weight:900;cursor:pointer}\n      @media(max-width:720px){#reelsAiColorPanel{right:8px;bottom:58px}}\n    ";
     document.head.appendChild(style);
     const root = document.createElement('div');
     root.id = 'reelsAiColorPanel';
