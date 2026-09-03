@@ -8,7 +8,7 @@
     .raTabs{display:flex;gap:6px;margin-bottom:8px}.raTab{flex:1;background:#24232e;border:1px solid #353442;color:#aaa;padding:8px;border-radius:9px;font-weight:900;font-size:10px;cursor:pointer}.raTab.active{background:#7b4bd4;color:#fff;border-color:#9b6bef}
     .raSearch{display:flex;gap:6px}.raSearch input{flex:1;background:#08080d;color:#fff;border:1px solid #383844;border-radius:9px;padding:9px;font:inherit;font-size:12px}.raSearch button{padding:9px 11px}
     .raFilters{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:7px 0}.raFilters select{padding:8px;font-size:10px}
-    .raGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.raItem{position:relative;aspect-ratio:3/4;background:#09090e;border:1px solid #30303b;border-radius:8px;overflow:hidden;cursor:pointer}.raItem img{width:100%;height:100%;object-fit:cover}.raItem span{position:absolute;left:4px;right:4px;bottom:4px;background:rgba(0,0,0,.7);border-radius:5px;padding:3px;font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.raLoading,.raEmpty{font-size:10px;color:#92929e;text-align:center;padding:16px}.raPager{display:flex;gap:6px;margin-top:8px}.raPager button{flex:1;padding:8px;background:#262631}.raCredit{font-size:9px;color:#777783;margin-top:7px}.raColors{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}.raColor{height:34px;border-radius:8px;border:1px solid #555;cursor:pointer}.raColor.active{outline:2px solid #fff;outline-offset:1px}
+    .raGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.raItem{position:relative;aspect-ratio:3/4;background:#09090e;border:1px solid #30303b;border-radius:8px;overflow:hidden;cursor:pointer}.raItem img{width:100%;height:100%;object-fit:cover}.raItem span{position:absolute;left:4px;right:4px;bottom:4px;background:rgba(0,0,0,.7);border-radius:5px;padding:3px;font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.raLoading,.raEmpty{font-size:10px;color:#92929e;text-align:center;padding:16px}.raPager{display:flex;gap:6px;margin-top:8px}.raPager button{flex:1;padding:8px;background:#262631}.raCredit{font-size:9px;color:#777783;margin-top:7px}.raColors{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.raColor{height:38px;border-radius:8px;border:1px solid #555;cursor:pointer}.raColor.active{outline:2px solid #fff;outline-offset:1px}
     @media(max-width:720px){#raTools{right:8px;bottom:8px}.raGrid{grid-template-columns:repeat(3,1fr)}}
   `;
   document.head.appendChild(style);
@@ -20,7 +20,7 @@
       <div class="raTabs"><button class="raTab active" data-tab="pixabay">🖼️ Pixabay</button><button class="raTab" data-tab="colors">🎨 Cores</button></div>
       <div id="raPixabayView">
         <div class="raSearch"><input id="raPixabayQuery" placeholder="Buscar imagens…"><button id="raPixabayGo">Buscar</button></div>
-        <div class="raFilters"><select id="raOrientation"><option value="vertical">Vertical 9:16</option><option value="horizontal">Horizontal</option></select><select id="raColor"><option value="">Todas as cores</option><option value="red">Vermelho</option><option value="orange">Laranja</option><option value="yellow">Amarelo</option><option value="green">Verde</option><option value="blue">Azul</option><option value="pink">Rosa</option><option value="purple">Lilás</option><option value="white">Branco</option><option value="black">Preto</option><option value="brown">Marrom</option><option value="grayscale">Cinza</option></select></div>
+        <div class="raFilters"><select id="raOrientation"><option value="vertical">Vertical 9:16</option><option value="horizontal">Horizontal</option></select><select id="raColor"><option value="">Todas as cores</option><option value="red">Vermelho</option><option value="orange">Laranja</option><option value="yellow">Amarelo</option><option value="green">Verde</option><option value="blue">Azul</option><option value="pink">Rosa</option><option value="white">Branco</option><option value="black">Preto</option><option value="brown">Marrom</option><option value="grayscale">Cinza</option></select></div>
         <div id="raPixabayResults" class="raGrid"><div class="raEmpty">Digite um tema para buscar imagens gratuitas.</div></div>
         <div class="raPager"><button id="raPrev">← Anterior</button><button id="raNext">Próxima →</button></div>
         <div class="raCredit">Imagens: Pixabay. A seleção mostra a origem e baixa a mídia para o editor.</div>
@@ -45,16 +45,12 @@
     if (tab.dataset.tab === 'colors') renderColors();
   });
 
-  const colors = ['#ffffff','#ffd54a','#55d6ff','#ff6fb5','#ff5d5d','#65e572','#9b5cff','#ff9f43','#111111','#b9b9c4','#00d4a8','#ff7aa2'];
+  const colors = ['#ffffff','#ffd54a','#55d6ff','#ff6fb5','#ff5d5d','#65e572'];
   function renderColors(){
     root.querySelector('.raColors').innerHTML = colors.map(c => `<button class="raColor" title="${c}" style="background:${c}" data-color="${c}"></button>`).join('');
     root.querySelectorAll('.raColor').forEach(btn => btn.onclick = () => {
-      const active = document.querySelector('.reel.active [data-act="color"]');
-      if (active) active.click();
-      const colorButtons = document.querySelectorAll('.reel.active [data-act="color"]');
-      const match = [...colorButtons].find(b => b.dataset.color.toLowerCase() === btn.dataset.color.toLowerCase());
+      const match = [...document.querySelectorAll('.reel.active [data-act="color"]')].find(b => b.dataset.color.toLowerCase() === btn.dataset.color.toLowerCase());
       if (match) match.click();
-      else window.dispatchEvent(new CustomEvent('reelsai-color',{detail:{color:btn.dataset.color}}));
     });
   }
 
@@ -92,11 +88,9 @@
       const ext = (blob.type.split('/')[1] || 'jpg').split(';')[0];
       const file = new File([blob], `pixabay-${Date.now()}.${ext}`, {type:blob.type || 'image/jpeg'});
       const dt = new DataTransfer(); dt.items.add(file); input.files = dt.files; input.dispatchEvent(new Event('change',{bubbles:true}));
-      toggle.textContent = '🖼️ Pixabay · 🎨 Cores';
     } catch(e) {
-      toggle.textContent = '🖼️ Pixabay · 🎨 Cores';
       alert('Não foi possível importar a imagem do Pixabay agora.');
-    } finally { toggle.disabled = false; }
+    } finally { toggle.disabled = false; toggle.textContent = '🖼️ Pixabay · 🎨 Cores'; }
   }
   root.querySelector('#raPixabayGo').onclick = search;
   root.querySelector('#raPixabayQuery').onkeydown = e => { if(e.key === 'Enter') search(); };
