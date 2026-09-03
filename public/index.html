@@ -67,4 +67,5 @@ function recordFrames(r,canvas,rec){const old=r.time,start=performance.now();fun
 function downloadBlob(chunks,name){const blob=new Blob(chunks,{type:'video/webm'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.className='download';a.textContent='⬇ Baixar Reel';document.querySelector('.reel.active .preview').appendChild(a)}
 ensureReel();
 </script>
+<script src="/pixabay-panel.js"></script>
 </body></html>
