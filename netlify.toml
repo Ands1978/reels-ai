@@ -32,6 +32,12 @@
   status = 200
   force = true
 
+[[redirects]]
+  from = "/forgot-password"
+  to = "/forgot-password.html"
+  status = 200
+  force = true
+
 # Public pricing / sales page.
 [[redirects]]
   from = "/planos"
