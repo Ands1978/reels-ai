@@ -1,6 +1,11 @@
-const json = (body, status = 200) => ({
+const ALLOWED_COLORS = new Set(['grayscale','transparent','red','orange','yellow','green','turquoise','blue','lilac','pink','white','gray','black','brown']);
+
+const json = (body, status = 200, cache = false) => ({
   statusCode: status,
-  headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" },
+  headers: {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": cache ? "public, max-age=86400, s-maxage=86400" : "no-store"
+  },
   body: JSON.stringify(body)
 });
 
@@ -16,17 +21,20 @@ exports.handler = async event => {
   const q = clean(params.get("q"));
   const page = Math.min(Math.max(Number(params.get("page")) || 1, 1), 25);
   const perPage = Math.min(Math.max(Number(params.get("per_page")) || 24, 3), 60);
+  const orientation = params.get("orientation") === "horizontal" ? "horizontal" : "vertical";
+  const color = ALLOWED_COLORS.has(params.get("colors")) ? params.get("colors") : "";
 
   const api = new URL("https://pixabay.com/api/");
   api.searchParams.set("key", key);
   api.searchParams.set("lang", "pt");
   api.searchParams.set("q", q);
   api.searchParams.set("image_type", "photo");
-  api.searchParams.set("orientation", params.get("orientation") === "horizontal" ? "horizontal" : "vertical");
+  api.searchParams.set("orientation", orientation);
   api.searchParams.set("safesearch", "true");
   api.searchParams.set("order", "popular");
   api.searchParams.set("page", String(page));
   api.searchParams.set("per_page", String(perPage));
+  if (color) api.searchParams.set("colors", color);
 
   try {
     const response = await fetch(api);
@@ -46,7 +54,7 @@ exports.handler = async event => {
         tags: item.tags,
         user: item.user
       }))
-    });
+    }, 200, true);
   } catch (error) {
     console.error("pixabay-search", error);
     return json({ error: "Não foi possível consultar o Pixabay agora." }, 502);
